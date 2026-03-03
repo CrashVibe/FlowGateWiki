@@ -1,0 +1,6 @@
+{
+  "title": "Client",
+  "defaultOpen": true,
+  "collapsible": false,
+  "pages": ["deploy", "plugin"]
+}

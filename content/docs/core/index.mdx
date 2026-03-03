@@ -1,0 +1,64 @@
+---
+title: 引言
+icon: "CirclePlay"
+---
+
+import { Steps, Step } from "fumadocs-ui/components/steps";
+
+**FlowGate** 是一个用于 **Minecraft 服务器 ↔ 外部聊天平台** 的桥接方案，由两个核心组件构成：
+
+<Cards>
+  <Card
+    title="FGATE Nexus"
+    description="跨平台的可视化网关与管理后台，负责适配外部聊天（如 OneBot/QQ）、账号绑定、消息与事件的中枢同步。"
+    href="https://github.com/CrashVibe/FGateNexus"
+  />
+  <Card
+    title="FGATE Client"
+    description="运行在 Bukkit 系列服务端上的插件，与 Nexus 建立连接，转发游戏内聊天与事件，实现双向桥接。"
+    href="https://github.com/CrashVibe/FGateClient"
+  />
+</Cards>
+
+## 体系结构与角色分工
+
+### Nexus（网关 / 控制台）
+
+| 特性     | 详情                                              |
+| -------- | ------------------------------------------------- |
+| 技术栈   | Nuxt 4 · TypeScript · Naïve UI · Nuxt UI · Koishi |
+| 平台支持 | Windows / Linux / macOS                           |
+| 外观     | 深/浅 色主题                                      |
+
+**核心能力**
+
+- 多服务器与多聊天适配器的统一管理
+- 用户认证（密码、2FA）与账号绑定 / 解绑
+- 消息与事件同步
+- 远程命令执行
+
+<Callout type="info" title="关于 Koishi">
+  [Koishi](https://koishi.chat) 是 Nexus 内置的跨平台聊天框架，负责对接各类外部聊天平台（如 QQ/OneBot）。FlowGate Nexus
+  已在内部完成与 Koishi 的集成，你无需单独安装或配置，开箱即用。
+</Callout>
+
+> 适配层：当前仅支持 **OneBot / QQ**，后续可扩展更多适配器。
+
+### Client（插件）
+
+- **部署位置**：目标 Minecraft 服务器
+- **职责**：与 Nexus 建立连接，将服务端聊天 / 事件上送 Nexus，并接收外部平台的消息回灌到游戏内
+
+## 工作原理
+
+<Steps>
+  <Step>在 Minecraft 服务器上安装 **FGATE Client** 插件，并将其指向你的 **Nexus** 实例地址。</Step>
+  <Step>**Nexus** 通过聊天适配器（如 OneBot / QQ）与外部平台建立连接，统一维护账号绑定、鉴权与多源路由。</Step>
+  <Step>消息双向流转：游戏内 → Client → Nexus → 外部平台；外部平台 → Nexus → Client → 游戏内。</Step>
+</Steps>
+
+## 隐私与安全
+
+<Callout type="info" title="数据安全承诺">
+  **不上传或收集任何用户数据**——所有数据均在本地服务器处理。若未来接入第三方服务 / API，会提前告知并提供可配置开关。
+</Callout>
