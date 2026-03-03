@@ -1,0 +1,26 @@
+---
+title: 引言
+---
+
+import { getPageTreePeers } from "fumadocs-core/page-tree";
+import { source } from "@/lib/source";
+
+本章节介绍如何使用 **OneBot v11** 适配器将 FlowGate Nexus 连接到 QQ 平台，实现 Minecraft 服务器与 QQ 群聊的消息桥接。
+
+## 前置要求
+
+- 已部署并运行的 FlowGate Nexus 实例
+- 一个可用的 QQ 账号
+- 已创建的 QQ 群聊（用于消息桥接）
+
+## 协议端部署方式
+
+<Cards>
+  {getPageTreePeers(source.getPageTree(), "/docs/core/how-install/adapater/onebot").map((peer) => (
+    <Card key={peer.url} title={peer.name} href={peer.url}>
+      {peer.description}
+    </Card>
+  ))}
+</Cards>
+
+其实只要支持 Onebot v11 协议的 QQ 机器人框架都可以接入 FlowGate Nexus。因为作者能力有限，我们非常欢迎贡献其它 OneBot v11 协议端部署教程！

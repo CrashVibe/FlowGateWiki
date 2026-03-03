@@ -1,0 +1,6 @@
+{
+  "title": "Nexus",
+  "defaultOpen": true,
+  "collapsible": false,
+  "pages": ["windows", "macos", "linux", "docker"]
+}

@@ -1,0 +1,90 @@
+---
+title: Windows 安装指南
+---
+
+import { File, Folder, Files } from "fumadocs-ui/components/files";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { VersionFilename } from "@/components/version-filename";
+
+本指南将带你在 **Windows** 系统上完成 FlowGate 的完整部署，包括 **FGateNexus**（核心服务）和 **FGateClient**（Client 端）两个部分。
+
+## 前置要求
+
+- Windows x64 操作系统
+- 基本的命令行操作能力（PowerShell 或 CMD）
+
+<Steps>
+  <Step>
+    ## 下载 FGateNexus
+
+    前往 [FGateNexus Releases](https://github.com/CrashVibe/FGateNexus/releases/latest) 下载适用于 Windows 的压缩包：
+
+    <VersionFilename repo="nexus" template="FGateNexus-{version}-win.zip" />
+
+    下载完成后，将压缩包解压到你希望运行服务的目录，例如 `C:\FlowGate\`。
+
+    解压后的目录大概结构如下：
+
+    <Files>
+      <File name="FGateNexus.exe" />
+      <Folder name="config" defaultOpen>
+        <File name="appsettings.json" />
+      </Folder>
+    </Files>
+
+  </Step>
+  <Step>
+    ## 配置 FGateNexus
+
+    打开 `config\appsettings.json`，根据你的需求修改配置项。
+
+    <Callout type="info">首次运行时，FGateNexus 会自动在目录下创建 `sqlite.db` 数据库文件以及配置文件。</Callout>
+
+  </Step>
+  <Step>
+    ## 运行 FGateNexus
+
+    打开 PowerShell 或命令提示符（CMD），进入解压目录并运行可执行文件：
+
+    ```powershell
+    cd C:\FlowGate
+    .\FGateNexus.exe
+    ```
+
+    启动成功后，你将看到类似以下的输出：
+
+    ```log
+    [MIGRATION] 检查并执行数据库迁移...
+    [SUCCESS] 数据库准备就绪
+    INFO: 配置文件路径：...\config\appsettings.json
+    INFO: [REGISTER] 请求处理器已注册：player.login
+    Listening on http://127.0.0.1:3000/...
+    INFO: Koishi 服务启动 http://127.0.0.1:5140
+    ```
+
+    服务启动后会监听以下端口：
+
+    | 服务                  | 地址                    |
+    | --------------------- | ----------------------- |
+    | FGateNexus HTTP / API | `http://127.0.0.1:3000` |
+    | Koishi                | `http://127.0.0.1:5140` |
+
+    <Callout type="tip">Koishi 用于与你的聊天适配器进行链接，在管理面板中配置适配器时需要使用到这个地址。</Callout>
+
+  </Step>
+  <Step>
+    ## 安装 FGateClient 插件
+
+    插件安装步骤与操作系统无关，请参阅独立教程：[安装 FGateClient 插件](/docs/core/how-install/plugin)。
+
+  </Step>
+</Steps>
+
+## 开机自启（可选）
+
+如果希望 FGateNexus 随 Windows 开机自动启动，可以将其注册为系统服务。在 PowerShell（管理员）中执行：
+
+```powershell
+New-Service -Name "FGateNexus" -BinaryPathName "{程序目录}" -DisplayName "FGateNexus Service" -StartupType Automatic
+Start-Service FGateNexus
+```

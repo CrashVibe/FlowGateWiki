@@ -1,0 +1,7 @@
+{
+  "title": "功能",
+  "description": "FlowGate 的功能模块说明",
+  "root": true,
+  "icon": "Blocks",
+  "pages": ["index", "---功能模块---", "writing"]
+}

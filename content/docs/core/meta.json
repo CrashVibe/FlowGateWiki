@@ -1,0 +1,7 @@
+{
+  "title": "指南",
+  "description": "快速入门指南",
+  "root": true,
+  "icon": "Flag",
+  "pages": ["---介绍---", "index", "---部署---", "nexus", "client", "adapater", "---配置---", "...config"]
+}

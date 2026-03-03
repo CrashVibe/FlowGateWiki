@@ -1,0 +1,90 @@
+---
+title: 安装插件
+---
+
+import { File, Folder, Files } from "fumadocs-ui/components/files";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { VersionFilename } from "@/components/version-filename";
+
+本文介绍如何将 **FGateClient** 插件安装到 Paper Minecraft 服务器，使其与 FGateNexus 建立连接。
+
+<Callout type="idea">后续还会制作 Forge / Fabric 等模组版的 FGateClient 插件，敬请期待！记得催更哦～</Callout>
+
+<Steps>
+  <Step>
+    ## 下载 FGateClient
+
+    前往 [FGateClient Releases](https://github.com/CrashVibe/FGateClient/releases) 下载 Paper 插件 JAR 文件：
+
+    <VersionFilename repo="client" template="FGateClient-paper-{version}.jar" />
+
+  </Step>
+  <Step>
+    ## 放入 plugins 目录
+
+    将下载的 JAR 文件放入你的 Minecraft 服务器的 `plugins/` 目录：
+
+    <Files>
+      <Folder name="plugins" defaultOpen>
+        <File name="FGateClient-paper-x.x.x.jar" />
+      </Folder>
+    </Files>
+
+    然后重启服务器，插件将自动加载并在 `plugins/FGateClient/` 目录生成配置文件。
+
+  </Step>
+  <Step>
+    ## 配置插件
+
+    编辑 `plugins/FGateClient/config.yml`，完整配置说明如下：
+
+    ```yaml
+    # 是否开启调试模式
+    # 其实就是详细的日志输出，告诉你我真的干活没偷懒啦！
+    debug: true
+    # 连接配置
+    websocket:
+      # 连接地址
+      url: ws://127.0.0.1:3000/api
+      # 认证令牌
+      token: your_token_here
+      # 是否重连
+      autoReconnect: true
+      # 重连间隔（秒）
+      reconnectInterval: 10
+    # 事件解析配置
+    eventResolve:
+      join:
+        # 是否允许未连接状态下玩家加入服务器
+        allowJoin: true
+        # 踢出服务器时的提示
+        kickMessage: 服务器尚未准备好，请稍后再试
+        # 是否允许处理发生错误但仍然允许玩家加入服务器
+        errorJoin: true
+        # 处理玩家加入服务器时发生错误的提示
+        errorMessage: 服务器发生错误，请稍后再试
+    ```
+
+    | 配置项                           | 说明                                                                           |
+    | -------------------------------- | ------------------------------------------------------------------------------ |
+    | `debug`                          | 开启后输出详细日志，排查问题时建议启用                                         |
+    | `websocket.url`                  | FGateNexus 的 WebSocket API 地址，一定要在 FGateNexus 的控制台 URL 后加上 /api |
+    | `websocket.token`                | 认证令牌，需与 FGateNexus 中配置的一致                                         |
+    | `websocket.autoReconnect`        | 断线后是否自动重连                                                             |
+    | `websocket.reconnectInterval`    | 重连间隔，单位为秒                                                             |
+    | `eventResolve.join.allowJoin`    | FGateNexus 未连接时是否允许玩家进入服务器                                      |
+    | `eventResolve.join.kickMessage`  | 拒绝进入时展示给玩家的提示信息                                                 |
+    | `eventResolve.join.errorJoin`    | 处理登录事件时发生错误是否仍允许玩家进入                                       |
+    | `eventResolve.join.errorMessage` | 错误发生时展示给玩家的提示信息                                                 |
+
+    <Callout type="tip">
+      如果 FGateNexus 与 Minecraft 服务器运行在不同机器上，请将 `websocket.url` 中的 `127.0.0.1` 替换为 FGateNexus
+      所在机器的 IP 地址。
+    </Callout>
+
+    保存配置后，重载插件或重启服务器，插件即会自动连接 FGateNexus。
+
+  </Step>
+</Steps>
+
+查看 FGateNexus 服务器管理页面，如果连接成功，你会在服务器列表中看到对应的实例状态为 **在线**。

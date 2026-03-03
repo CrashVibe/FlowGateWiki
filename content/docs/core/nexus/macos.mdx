@@ -1,0 +1,91 @@
+---
+title: macOS 安装指南
+---
+
+import { File, Folder, Files } from "fumadocs-ui/components/files";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { VersionFilename } from "@/components/version-filename";
+
+本指南将带你在 **macOS** 系统上完成 FlowGate 的完整部署，包括 **FGateNexus**（核心服务）和 **FGateClient**（Client 端）两个部分。
+
+## 前置要求
+
+- macOS（Apple Silicon 或 Intel）操作系统
+- 基本的命令行操作能力（Terminal）
+
+<Steps>
+  <Step>
+    ## 下载 FGateNexus
+
+    前往 [FGateNexus Releases](https://github.com/CrashVibe/FGateNexus/releases/latest) 下载适用于 macOS 的压缩包，根据你的设备架构选择对应版本：
+
+    | 架构  | 适用设备               | 文件名                                                                            |
+    | ----- | ---------------------- | --------------------------------------------------------------------------------- |
+    | x64   | Intel Mac              | <VersionFilename repo="nexus" template="FGateNexus-{version}-mac-x64.tar.gz" />   |
+    | ARM64 | Apple Silicon (M 系列) | <VersionFilename repo="nexus" template="FGateNexus-{version}-mac-arm64.tar.gz" /> |
+
+    下载完成后，将压缩包解压到你希望运行服务的目录，例如 `~/FlowGate/`。
+
+    解压后的目录结构大概如下：
+
+    <Files>
+      <File name="FGateNexus" />
+      <Folder name="config" defaultOpen>
+        <File name="appsettings.json" />
+      </Folder>
+    </Files>
+
+  </Step>
+  <Step>
+    ## 配置 FGateNexus
+
+    打开 `config/appsettings.json`，根据你的需求修改配置项。
+
+    <Callout type="info">首次运行时，FGateNexus 会自动在目录下创建 `sqlite.db` 数据库文件以及配置文件。</Callout>
+
+  </Step>
+  <Step>
+    ## 运行 FGateNexus
+
+    打开终端（Terminal），进入解压目录，赋予可执行权限后运行：
+
+    ```bash
+    cd ~/FlowGate
+    chmod +x FGateNexus
+    ./FGateNexus
+    ```
+
+    后续你也可以直接双击执行文件来启动。
+
+    启动成功后，你将看到类似以下的输出：
+
+    ```log
+    [MIGRATION] 检查并执行数据库迁移...
+    [SUCCESS] 数据库准备就绪
+    INFO: 配置文件路径：.../config/appsettings.json
+    INFO: [REGISTER] 请求处理器已注册：player.login
+    Listening on http://127.0.0.1:3000/...
+    INFO: Koishi 服务启动 http://127.0.0.1:5140
+    ```
+
+    服务启动后会监听以下端口：
+
+    | 服务                  | 地址                    |
+    | --------------------- | ----------------------- |
+    | FGateNexus HTTP / API | `http://127.0.0.1:3000` |
+    | Koishi                | `http://127.0.0.1:5140` |
+
+    <Callout type="tip">Koishi 用于与你的聊天适配器进行链接，在管理面板中配置适配器时需要使用到这个地址。</Callout>
+
+  </Step>
+  <Step>
+    ## 安装 FGateClient 插件
+
+    插件安装步骤与操作系统无关，请参阅独立教程：[安装 FGateClient 插件](/docs/core/how-install/plugin)。
+
+  </Step>
+</Steps>
+
+## 开机自启（可选）
+
+[你不会 Bing 一下嘛](https://www.bing.com/search?q=mac%20%E8%AE%BE%E7%BD%AE%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8&qs=n&form=QBRE&sp=-1&lq=0&pq=mac%20%E8%AE%BE%E7%BD%AE%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8&sc=12-10&sk=&cvid=EA17DFBA3F734E4ABD37EE2BECBDDDAB)
