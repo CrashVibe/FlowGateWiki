@@ -1,8 +1,10 @@
 import { RootProvider } from "fumadocs-ui/provider/next";
+import type { Metadata } from "next";
 
 import "./global.css";
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+
+import SearchDialog from "@/components/search";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -12,7 +14,13 @@ export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <html lang="zh-CN" className={inter.className} suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
-        <RootProvider>{children}</RootProvider>
+        <RootProvider
+          search={{
+            SearchDialog,
+          }}
+        >
+          {children}
+        </RootProvider>
       </body>
     </html>
   );
