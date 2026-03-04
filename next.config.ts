@@ -21,4 +21,7 @@ const config: NextConfig = {
 
 export default withMDX(config);
 
-import('@opennextjs/cloudflare').then(m => m.initOpenNextCloudflareForDev());
+(async () => {
+  const m = await import("@opennextjs/cloudflare");
+  m.initOpenNextCloudflareForDev();
+})();
