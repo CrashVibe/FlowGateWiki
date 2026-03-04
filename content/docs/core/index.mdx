@@ -3,8 +3,6 @@ title: 引言
 icon: "CirclePlay"
 ---
 
-import { Steps, Step } from "fumadocs-ui/components/steps";
-
 **FlowGate** 是一个用于 **Minecraft 服务器 ↔ 外部聊天平台** 的桥接方案，由两个核心组件构成：
 
 <Cards>
@@ -51,11 +49,9 @@ import { Steps, Step } from "fumadocs-ui/components/steps";
 
 ## 工作原理
 
-<Steps>
-  <Step>在 Minecraft 服务器上安装 **FGATE Client** 插件，并将其指向你的 **Nexus** 实例地址。</Step>
-  <Step>**Nexus** 通过聊天适配器（如 OneBot / QQ）与外部平台建立连接，统一维护账号绑定、鉴权与多源路由。</Step>
-  <Step>消息双向流转：游戏内 → Client → Nexus → 外部平台；外部平台 → Nexus → Client → 游戏内。</Step>
-</Steps>
+- 在 Minecraft 服务器上安装 **FGATE Client** 插件，并将其指向你的 **Nexus** 实例地址。
+- **Nexus** 通过聊天适配器（如 OneBot / QQ）与外部平台建立连接，统一维护账号绑定、鉴权与多源路由。
+- 消息双向流转：游戏内 → Client → Nexus → 外部平台；外部平台 → Nexus → Client → 游戏内。
 
 ## 隐私与安全
 
