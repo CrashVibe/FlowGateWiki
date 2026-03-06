@@ -6,8 +6,8 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import Image from "next/image";
 import { useState } from "react";
 
-import preview1 from "@/app/assets/preview/1.png";
-import preview2 from "@/app/assets/preview/2.png";
+import preview1 from "@/app/assets/preview/1.webp";
+import preview2 from "@/app/assets/preview/2.webp";
 import { cn } from "@/lib/cn";
 
 const windowDots = [
@@ -18,7 +18,7 @@ const windowDots = [
 
 const previews = [
   { label: "主界面", src: preview1, value: "1" },
-  { label: "控制台", src: preview2, value: "2" },
+  { label: "配置页", src: preview2, value: "2" },
 ];
 
 export const PreviewSection = () => {
