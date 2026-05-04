@@ -24,16 +24,7 @@ import { VersionFilename } from "@/components/version-filename";
     | x64   | Intel Mac              | <VersionFilename repo="nexus" template="FGateNexus-{version}-mac-x64.tar.gz" />   |
     | ARM64 | Apple Silicon (M 系列) | <VersionFilename repo="nexus" template="FGateNexus-{version}-mac-arm64.tar.gz" /> |
 
-    下载完成后，将压缩包解压到你希望运行服务的目录，例如 `~/FlowGate/`。
-
-    解压后的目录结构大概如下：
-
-    <Files>
-      <File name="FGateNexus" />
-      <Folder name="config" defaultOpen>
-        <File name="appsettings.json" />
-      </Folder>
-    </Files>
+    下载完成后，将压缩包解压到你希望运行服务的目录，例如 `~/flowgate/`。
 
   </Step>
   <Step>
@@ -63,7 +54,6 @@ import { VersionFilename } from "@/components/version-filename";
     [MIGRATION] 检查并执行数据库迁移...
     [SUCCESS] 数据库准备就绪
     INFO: 配置文件路径：.../config/appsettings.json
-    INFO: [REGISTER] 请求处理器已注册：player.login
     Listening on http://127.0.0.1:3000/...
     INFO: Koishi 服务启动 http://127.0.0.1:5140
     ```
