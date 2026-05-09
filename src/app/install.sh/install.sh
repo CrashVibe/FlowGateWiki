@@ -284,31 +284,41 @@ require_cmd() {
 
 # ── Docker 缺失时提示安装 ──────────────────────────────────
 ensure_docker() {
-    if command -v docker &>/dev/null; then
-        return 0
-    fi
+    command -v docker &>/dev/null && return 0
 
     print_warn "未检测到 Docker。"
-    local install_docker_choice
-    ask "是否现在安装 Docker？(y/n)" install_docker_choice "y"
-
-    if [[ ! "$install_docker_choice" =~ ^[Yy]$ ]]; then
-        print_info "已取消安装，退出安装程序。"
-        exit 0
-    fi
+    local ans
+    ask "是否现在安装 Docker？(y/n)" ans "y"
+    [[ "$ans" =~ ^[Yy]$ ]] || { print_info "已取消安装，退出。"; exit 0; }
 
     local country
-    country=$(curl -s ipinfo.io/country)
+    country=$(curl -s ipinfo.io/country 2>/dev/null || echo "")
     print_info "当前服务器位置：${BOLD}${country:-未知}${RESET}"
 
-    if [[ "$country" == "CN" ]]; then
-        bash <(curl -sSL https://linuxmirrors.cn/docker.sh)
-    else
-        curl -fsSL https://get.docker.com -o get-docker.sh
-        sudo sh get-docker.sh
+    local tmp_script
+    tmp_script=$(mktemp /tmp/docker-install-XXXXXX.sh)
+
+    print_info "正在下载 Docker 安装脚本..."
+    local url="https://get.docker.com"
+    [[ "$country" == "CN" ]] && url="https://linuxmirrors.cn/docker.sh"
+    curl -fsSL "$url" -o "$tmp_script"
+    chmod +x "$tmp_script"
+
+    tput smcup 2>/dev/null && tput clear 2>/dev/null
+    bash "$tmp_script"
+    local exit_code=$?
+    rm -f "$tmp_script"
+    tput rmcup 2>/dev/null
+
+    echo ""
+    if [[ $exit_code -ne 0 ]]; then
+        print_error "Docker 安装失败（退出码 ${exit_code}），请手动安装后重试。"
+        exit 1
     fi
 
     require_cmd docker
+    print_ok "Docker 安装完成！"
+    echo ""
 }
 
 # ════════════════════════════════════════════════════════════
@@ -372,11 +382,15 @@ check_existing_compose() {
 }
 
 # ════════════════════════════════════════════════════════════
-#   Sentry 遥测配置
+#   应用配置（Sentry / Host / Port）
 #   $1 = config 目录路径
 # ════════════════════════════════════════════════════════════
-setup_sentry() {
+setup_appsettings() {
     local config_dir="$1"
+    local koishi_host="$2"
+    local koishi_port="$3"
+    local nitro_host="$4"
+    local nitro_port="$5"
 
     # 更新模式下若配置已存在，直接跳过
     if [[ "$IS_UPDATE" -eq 1 && -f "${config_dir}/appsettings.json" ]]; then
@@ -409,11 +423,19 @@ setup_sentry() {
     fi
 
     # 写入 appsettings.json
-    cat > "${config_dir}/appsettings.json" << EOF
+        cat > "${config_dir}/appsettings.json" << EOF
 {
-  "sentry": {
-    "enabled": ${sentry_enabled}
-  }
+    "sentry": {
+        "enabled": ${sentry_enabled}
+    },
+    "koishi": {
+        "host": "${koishi_host}",
+        "port": ${koishi_port}
+    },
+    "nitro": {
+        "host": "${nitro_host}",
+        "port": ${nitro_port}
+    }
 }
 EOF
 
@@ -470,6 +492,12 @@ install_binary() {
     local enable_autostart
     ask "是否开机自动启动？(y/n)" enable_autostart "y"
 
+    local koishi_host koishi_port nitro_host nitro_port
+    ask "Koishi Host" koishi_host "0.0.0.0"
+    ask "Koishi 端口" koishi_port "5140"
+    ask "Nitro Host" nitro_host "0.0.0.0"
+    ask "Nitro 端口" nitro_port "3000"
+
     echo ""
     print_info "正在创建目录：${BOLD}${INSTALL_DIR}${RESET}"
     mkdir -p "${INSTALL_DIR}/config"
@@ -481,7 +509,7 @@ install_binary() {
         print_ok "旧服务已停止"
     fi
 
-    setup_sentry "${INSTALL_DIR}/config"
+    setup_appsettings "${INSTALL_DIR}/config" "$koishi_host" "$koishi_port" "$nitro_host" "$nitro_port"
 
     print_sep
     local installed_version
@@ -520,12 +548,21 @@ EOF
     fi
 
     echo ""
+    local nitro_host_label koishi_host_label
+    nitro_host_label="$nitro_host"
+    koishi_host_label="$koishi_host"
+    if [[ "$nitro_host" != "127.0.0.1" ]]; then
+        nitro_host_label="<服务器IP>"
+    fi
+    if [[ "$koishi_host" != "127.0.0.1" ]]; then
+        koishi_host_label="<服务器IP>"
+    fi
     box "安装完成！" "$BGREEN" \
         "" \
         "  版本号   : ${BCYAN}${installed_version}${RESET}" \
         "  安装目录 : ${INSTALL_DIR}" \
-        "  Web UI   : http://127.0.0.1:3000" \
-        "  Koishi   : http://127.0.0.1:5140" \
+        "  Web UI   : http://${nitro_host_label}:${nitro_port}" \
+        "  Koishi   : http://${koishi_host_label}:${koishi_port}" \
         "" \
         "  常用命令：" \
         "  ${CYAN}systemctl status  fgatenexus${RESET}  查看状态" \
@@ -566,7 +603,7 @@ install_docker() {
     print_info "创建数据目录..."
     mkdir -p "${data_dir}/config" "${data_dir}/data"
 
-    setup_sentry "${data_dir}/config"
+    setup_appsettings "${data_dir}/config" "0.0.0.0" "$port_koishi" "0.0.0.0" "$port_web"
 
     if docker ps -a --format '{{.Names}}' | grep -q '^fgatenexus$'; then
         print_info "正在移除旧容器..."
@@ -640,7 +677,7 @@ install_compose() {
     print_info "正在创建部署目录：${BOLD}${deploy_dir}${RESET}"
     mkdir -p "${deploy_dir}/config" "${deploy_dir}/data"
 
-    setup_sentry "${deploy_dir}/config"
+    setup_appsettings "${deploy_dir}/config" "0.0.0.0" "$port_koishi" "0.0.0.0" "$port_web"
 
     # 更新前停止旧服务
     if [[ -f "${deploy_dir}/docker-compose.yml" ]]; then
