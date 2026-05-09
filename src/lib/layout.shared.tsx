@@ -9,7 +9,7 @@ export const gitConfig = {
 };
 
 export const baseOptions: BaseLayoutProps = {
-  githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
+  githubUrl: `https://github.com/CrashVibe/FGateNexus`,
   nav: {
     title: (
       <div className="flex w-full flex-1 items-center gap-2 py-1.5">

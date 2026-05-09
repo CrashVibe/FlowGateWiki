@@ -22,7 +22,7 @@ export const HeroSection = () => (
           开始使用
         </Button>
         <Button
-          href="https://github.com/CrashVibe/FlowGateWiki"
+          href="https://github.com/CrashVibe/FGateNexus"
           variant="outline"
           target="_blank"
           rel="noopener noreferrer"

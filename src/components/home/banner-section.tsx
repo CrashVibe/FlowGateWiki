@@ -16,7 +16,7 @@ export const BannerSection = () => (
           快速开始
         </Button>
         <Button
-          href="https://github.com/ZeroCatDev/Flowgate"
+          href="https://github.com/CrashVibe/FGateNexus"
           variant="outline"
           target="_blank"
           rel="noopener noreferrer"
