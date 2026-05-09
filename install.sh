@@ -282,6 +282,45 @@ require_cmd() {
     fi
 }
 
+# ── Docker 缺失时提示安装 ──────────────────────────────────
+ensure_docker() {
+    command -v docker &>/dev/null && return 0
+
+    print_warn "未检测到 Docker。"
+    local ans
+    ask "是否现在安装 Docker？(y/n)" ans "y"
+    [[ "$ans" =~ ^[Yy]$ ]] || { print_info "已取消安装，退出。"; exit 0; }
+
+    local country
+    country=$(curl -s ipinfo.io/country 2>/dev/null || echo "")
+    print_info "当前服务器位置：${BOLD}${country:-未知}${RESET}"
+
+    local tmp_script
+    tmp_script=$(mktemp /tmp/docker-install-XXXXXX.sh)
+
+    print_info "正在下载 Docker 安装脚本..."
+    local url="https://get.docker.com"
+    [[ "$country" == "CN" ]] && url="https://linuxmirrors.cn/docker.sh"
+    curl -fsSL "$url" -o "$tmp_script"
+    chmod +x "$tmp_script"
+
+    tput smcup 2>/dev/null && tput clear 2>/dev/null
+    bash "$tmp_script"
+    local exit_code=$?
+    rm -f "$tmp_script"
+    tput rmcup 2>/dev/null
+
+    echo ""
+    if [[ $exit_code -ne 0 ]]; then
+        print_error "Docker 安装失败（退出码 ${exit_code}），请手动安装后重试。"
+        exit 1
+    fi
+
+    require_cmd docker
+    print_ok "Docker 安装完成！"
+    echo ""
+}
+
 # ════════════════════════════════════════════════════════════
 #   已安装检测 — 公共提示框
 #
@@ -513,7 +552,7 @@ install_docker() {
     print_step "Docker CLI 安装"
     print_sep
 
-    require_cmd docker
+    ensure_docker
 
     ask "镜像 Tag（例如 latest / 0.3.4）" DOCKER_TAG "latest"
 
@@ -579,7 +618,7 @@ install_compose() {
     print_step "Docker Compose 安装"
     print_sep
 
-    require_cmd docker
+    ensure_docker
 
     local compose_cmd=""
     if docker compose version &>/dev/null 2>&1; then

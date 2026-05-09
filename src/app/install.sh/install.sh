@@ -282,6 +282,35 @@ require_cmd() {
     fi
 }
 
+# ── Docker 缺失时提示安装 ──────────────────────────────────
+ensure_docker() {
+    if command -v docker &>/dev/null; then
+        return 0
+    fi
+
+    print_warn "未检测到 Docker。"
+    local install_docker_choice
+    ask "是否现在安装 Docker？(y/n)" install_docker_choice "y"
+
+    if [[ ! "$install_docker_choice" =~ ^[Yy]$ ]]; then
+        print_info "已取消安装，退出安装程序。"
+        exit 0
+    fi
+
+    local country
+    country=$(curl -s ipinfo.io/country)
+    print_info "当前服务器位置：${BOLD}${country:-未知}${RESET}"
+
+    if [[ "$country" == "CN" ]]; then
+        bash <(curl -sSL https://linuxmirrors.cn/docker.sh)
+    else
+        curl -fsSL https://get.docker.com -o get-docker.sh
+        sudo sh get-docker.sh
+    fi
+
+    require_cmd docker
+}
+
 # ════════════════════════════════════════════════════════════
 #   已安装检测 — 公共提示框
 #
@@ -513,7 +542,7 @@ install_docker() {
     print_step "Docker CLI 安装"
     print_sep
 
-    require_cmd docker
+    ensure_docker
 
     ask "镜像 Tag（例如 latest / 0.3.4）" DOCKER_TAG "latest"
 
@@ -579,7 +608,7 @@ install_compose() {
     print_step "Docker Compose 安装"
     print_sep
 
-    require_cmd docker
+    ensure_docker
 
     local compose_cmd=""
     if docker compose version &>/dev/null 2>&1; then
