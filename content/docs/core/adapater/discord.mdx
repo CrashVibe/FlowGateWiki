@@ -1,0 +1,157 @@
+---
+title: Discord 适配器
+description: 把你的 Discord 机器人接入 FlowGate，让它能收发消息。
+---
+
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
+这篇文档教你怎么把一个 Discord 机器人接进 FlowGate 的 sender 功能。整个流程分两块：先去 Discord 开发者后台把机器人建好、权限开好，再回到 FlowGate 填配置。
+
+不需要会写代码，但得有个自己的 Discord 账号，还得对那个服务器有管理权限（不然机器人没办法加进去）。
+
+---
+
+## 第一部分：在 Discord 创建机器人
+
+<Steps>
+
+<Step>
+
+### 打开 Discord 开发者平台
+
+浏览器访问 [https://discord.com/developers/applications](https://discord.com/developers/applications)，用你的 Discord 账号登录。
+
+进来之后你会看到一个应用列表页面，如果你以前没建过任何东西，列表是空的，这很正常。
+
+点右上角的 **New Application / 新 APP**，给它起个名字（随便起，只有你自己看得到），然后点 **Create / 创建**。
+
+<Video src="/assets/discord/discord_1.mp4" autoPlay muted loop />
+
+</Step>
+
+<Step>
+
+### 开启必要的权限开关
+
+进入刚创建的应用之后，左侧菜单找到 **Bot**，点进去。
+
+往下翻，找到 **Privileged Gateway Intents** 这一栏，里面有三个开关，你需要打开其中两个：
+
+- **Server Members Intent** — 打开
+- **Message Content Intent** — 打开
+
+<Callout type="warn">这两个开关如果不开，机器人收不到消息内容，FlowGate 那边就啥也拿不到。记得保存。</Callout>
+
+开完之后点页面底部的 **Save Changes**。
+
+<Video src="/assets/discord/discord_2.mp4" autoPlay muted loop />
+
+</Step>
+
+<Step>
+
+### 获取 Bot Token
+
+还是在 **Bot** 页面，找到 **Token** 那一栏，点 **Reset Token**（第一次用的话也可能显示 **Copy**）。
+
+它会生成一串字符，类似这样：
+
+```
+MTIzNDU2Nzg5MDEyMzQ1Njc4.GxxxxX.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+**复制下来，马上存好**，因为这个 token 只显示一次，页面刷新之后就再也看不到完整的了（得重新 Reset，之前的就失效了）。
+
+<Callout type="info">Token 相当于机器人的密码，不要发给任何人。</Callout>
+
+<Video src="/assets/discord/discord_3.mp4" autoPlay muted loop />
+
+</Step>
+
+<Step>
+
+### 邀请机器人进入你的服务器
+
+左侧菜单切换到 **OAuth2**，点 **OAuth2 URL 生成器**。
+
+**范围** 那一栏，勾选 **bot**。
+
+下面会出现 **机器人权限**，这里有两种做法：
+
+<Tabs items={['推荐：直接用管理员权限', '最小权限（麻烦一点）']}>
+
+<Tab value="推荐：直接用管理员权限">
+
+直接勾选 **管理员**。
+
+这是自用机器人最省事的方式——以后 FlowGate 更新了、加了新功能需要新权限，你也不用回来重新调整，一劳永逸。
+
+</Tab>
+
+<Tab value="最小权限（麻烦一点）">
+
+如果你对权限控制有要求，可以只勾这几个：
+
+- **Send Messages**（发送消息）
+- **Manage Nicknames**（管理昵称）
+
+但要注意，后续 FlowGate 如果用到其他功能，你可能需要回来这里重新加权限、重新生成链接、重新邀请。
+
+</Tab>
+
+</Tabs>
+
+权限选完之后，页面最下方会生成一个 **Generated URL**，复制这个链接，在浏览器新标签页打开。
+
+按提示选择你要把机器人加入哪个服务器，点授权，完成。
+
+<Video src="/assets/discord/discord_4.mp4" autoPlay muted loop />
+
+</Step>
+
+</Steps>
+
+---
+
+## 第二部分：在 FlowGate 填写配置
+
+机器人建好、进了服务器之后，回到 FlowGate 管理控制台。
+
+<Steps>
+
+<Step>
+
+### 进入适配器设置
+
+在左侧导航栏找到 **适配器**（或者 **Sender 配置**，看你的版本），点进去，选择新增适配器，类型选 **Discord**。
+
+</Step>
+
+<Step>
+
+### 填写配置项
+
+你会看到一个表单，需要填的内容如下：
+
+| 字段       | 填什么                   |
+| ---------- | ------------------------ |
+| 适配器名称 | 随便起，方便自己识别就行 |
+| Bot Token  | 刚才复制的那串 token     |
+
+其他字段如果有的话，按照页面提示填，通常保持默认就可以。
+
+</Step>
+
+<Step>
+
+### 保存并测试
+
+填完之后点 **创建**。
+
+FlowGate 会尝试连接你的机器人，如果 token 填对了、权限也开了，状态会变成「在线」。
+
+</Step>
+
+</Steps>
