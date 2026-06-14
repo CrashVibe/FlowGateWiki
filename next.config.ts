@@ -16,12 +16,6 @@ const config: NextConfig = {
       },
     ];
   },
-  serverExternalPackages: ["@takumi-rs/image-response"],
 };
 
 export default withMDX(config);
-
-(async () => {
-  const m = await import("@opennextjs/cloudflare");
-  m.initOpenNextCloudflareForDev();
-})();

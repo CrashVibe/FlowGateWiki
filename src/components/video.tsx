@@ -12,17 +12,19 @@ export const Video = ({ src, ...props }: React.VideoHTMLAttributes<HTMLVideoElem
     }
 
     const observer = new IntersectionObserver(
-      async ([entry]) => {
+      ([entry]) => {
+        if (!entry) {
+          return;
+        }
+
         if (entry.isIntersecting) {
           if (!el.src) {
             el.src = src as string;
             el.load();
           }
-          try {
-            await el.play();
-          } catch {
-            // ignore
-          }
+          el.play().catch(() => {
+            // Ignore autoplay rejection
+          });
         } else {
           el.pause();
           el.currentTime = 0;
@@ -32,7 +34,9 @@ export const Video = ({ src, ...props }: React.VideoHTMLAttributes<HTMLVideoElem
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+    };
   }, [src]);
 
   return (

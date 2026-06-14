@@ -16,7 +16,9 @@ const windowDots = [
   { color: "bg-green-400/70", label: "最大化" },
 ];
 
-const previews = [
+type Preview = { label: string; src: typeof preview1; value: string };
+
+const previews: [Preview, Preview] = [
   { label: "主界面", src: preview1, value: "1" },
   { label: "配置页", src: preview2, value: "2" },
 ];
@@ -84,6 +86,7 @@ export const PreviewSection = () => {
                   <Image
                     src={p.src}
                     alt={p.label}
+                    unoptimized
                     className="w-full select-none"
                     draggable={false}
                     priority={p.value === "1"}
