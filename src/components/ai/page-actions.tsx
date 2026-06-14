@@ -17,14 +17,14 @@ export const LLMCopyButton = ({
 }: {
   markdownUrl: string;
 }) => {
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [checked, onClick] = useCopyButton(async () => {
     const cached = cache.get(markdownUrl);
     if (cached) {
       return navigator.clipboard.writeText(cached);
     }
 
-    setLoading(true);
+    setIsLoading(true);
 
     try {
       await navigator.clipboard.write([
@@ -38,7 +38,7 @@ export const LLMCopyButton = ({
         }),
       ]);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   });
 
@@ -76,6 +76,7 @@ export const ViewOptions = ({
   githubUrl: string;
 }) => {
   const items = useMemo(() => {
+    // oxlint-disable-next-line unicorn/prefer-global-this
     const pageUrl = typeof window === "undefined" ? "loading" : window.location.href;
     const q = `Read ${pageUrl}, I want to ask questions about it.`;
 

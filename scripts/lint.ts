@@ -4,8 +4,10 @@ import { printErrors, scanURLs, validateFiles } from "next-validate-link";
 
 import { source } from "@/lib/source";
 
-const getHeadings = ({ data }: InferPageType<typeof source>): string[] =>
-  data.toc?.map((item) => item.url.slice(1)) ?? [];
+const getHeadings = async ({ data }: InferPageType<typeof source>): Promise<string[]> => {
+  const { toc } = await data.load();
+  return toc.map((item) => item.url.slice(1));
+};
 
 const getFiles = () => {
   const promises = source
@@ -24,14 +26,18 @@ const getFiles = () => {
 };
 
 const checkLinks = async () => {
+  const populateEntries = await Promise.all(
+    source.getPages().map(async (page) => ({
+      hashes: await getHeadings(page),
+      value: {
+        slug: page.slugs,
+      },
+    }))
+  );
+
   const scanned = await scanURLs({
     populate: {
-      "docs/[[...slug]]": source.getPages().map((page) => ({
-        hashes: getHeadings(page),
-        value: {
-          slug: page.slugs,
-        },
-      })),
+      "docs/[[...slug]]": populateEntries,
     },
     preset: "next",
   });

@@ -1,22 +1,13 @@
 import type { InferPageType } from "fumadocs-core/source";
 import { loader } from "fumadocs-core/source";
 import { lucideIconsPlugin } from "fumadocs-core/source/lucide-icons";
-import { docs } from "fumadocs-mdx:collections/server";
-import { icons } from "lucide-react";
-import { createElement } from "react";
+import { docs } from "collections/server";
+
+import { docsContentRoute } from "@/lib/shared";
 
 // See https://fumadocs.dev/docs/headless/source-api for more info
 export const source = loader({
   baseUrl: "/docs",
-  icon(icon) {
-    if (!icon) {
-      return;
-    }
-
-    if (icon in icons) {
-      return createElement(icons[icon as keyof typeof icons]);
-    }
-  },
   plugins: [lucideIconsPlugin()],
   source: docs.toFumadocsSource(),
 });
@@ -27,6 +18,15 @@ export const getPageImage = (page: InferPageType<typeof source>) => {
   return {
     segments,
     url: `/og/docs/${segments.join("/")}`,
+  };
+};
+
+export const getPageMarkdownUrl = (page: (typeof source)["$inferPage"]) => {
+  const segments = [...page.slugs, "content.md"];
+
+  return {
+    segments,
+    url: `${docsContentRoute}/${segments.join("/")}`,
   };
 };
 

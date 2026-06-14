@@ -27,7 +27,7 @@ export const VersionFilename = ({ repo, template, fallbackVersion = "vx.x.x" }: 
           setVersionInfo(info);
         }
       } catch (error) {
-        console.error(`Failed to fetch ${repo} version:`, error);
+        console.info(`Failed to fetch ${repo} version:`, error);
       } finally {
         if (!cancelled) {
           setIsLoading(false);
@@ -35,7 +35,7 @@ export const VersionFilename = ({ repo, template, fallbackVersion = "vx.x.x" }: 
       }
     };
 
-    fetchVersion();
+    void fetchVersion();
     return () => {
       cancelled = true;
     };
