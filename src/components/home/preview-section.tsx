@@ -6,8 +6,6 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden"
 import Image from "next/image"
 import { useState } from "react"
 
-import preview1 from "@/app/assets/preview/1.webp"
-import preview2 from "@/app/assets/preview/2.webp"
 import { cn } from "@/lib/cn"
 
 const windowDots = [
@@ -16,11 +14,11 @@ const windowDots = [
   { color: "bg-green-400/70", label: "最大化" },
 ]
 
-type Preview = { label: string; src: typeof preview1; value: string }
+type Preview = { label: string; src: string; value: string }
 
 const previews: [Preview, Preview] = [
-  { label: "主界面", src: preview1, value: "1" },
-  { label: "配置页", src: preview2, value: "2" },
+  { label: "主界面", src: "/assets/preview/1.webp", value: "1" },
+  { label: "配置页", src: "/assets/preview/2.webp", value: "2" },
 ]
 
 export const PreviewSection = () => {
@@ -86,6 +84,8 @@ export const PreviewSection = () => {
                   <Image
                     src={p.src}
                     alt={p.label}
+                    width={1879}
+                    height={1039}
                     unoptimized
                     className="w-full select-none"
                     draggable={false}
