@@ -1,0 +1,400 @@
+---
+title: Manifest 格式
+description: manifest.json 字段参考——数据源与可配置参数
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+每个模板包根目录必须有一个 `manifest.json`。入口页面固定为 `dist/index.html`（不可自定义路径）。
+
+## 顶层字段
+
+```json
+{
+  "id": "coins-leaderboard",
+  "name": "金币排行榜",
+  "version": "1.0.0",
+  "author": "你的名字",
+  "description": "用 PlaceholderAPI 的金币变量制作排行榜",
+  "viewport": "auto",
+  "dataSources": [],
+  "configSchema": []
+}
+```
+
+| 字段           | 类型                                   | 说明                                                            |
+| -------------- | -------------------------------------- | --------------------------------------------------------------- |
+| `id`           | string                                 | 唯一标识/目录名，`^[a-z0-9][a-z0-9-_]{1,63}$`（2–64 位小写）     |
+| `name`         | string                                 | 显示名称                                                        |
+| `version`      | string                                 | 模板包版本（与协议版本无关）                                    |
+| `author`       | string?                                | 作者（可选）                                                    |
+| `description`  | string?                                | 描述（可选）                                                    |
+| `viewport`     | `"auto"` 或 `{ width, height }`        | 截图视口；`auto` 按页面 body 包围盒自适应。默认 `"auto"`        |
+| `dataSources`  | 数组（最多 10）                        | 声明需要的数据源，见下                                          |
+| `configSchema` | 数组（最多 50）                        | 声明管理员可自定义的参数，见下                                  |
+
+## 数据源 `dataSources`
+
+数据源是封闭枚举，共 12 种 `type`。所有数据源都支持 `id`（结果对象的 key）与 `required`：
+
+- `required: true`（默认）：服务器不具备对应能力时，实例无法启用，渲染中止。
+- `required: false`：能力不可用时该数据源降级为 `null`/`[]`。
+
+按所需能力分组：
+
+| 分组                          | 类型                                                                                     |
+| ----------------------------- | ---------------------------------------------------------------------------------------- |
+| MC 服务器能力（FGateClient）   | `online_players`、`server_status`、`player_statistics`、`player_advancements`、`player_equipment` |
+| PlaceholderAPI                | `placeholder`、`placeholder_rank`                                                       |
+| Nexus 数据库（无需 MC 端能力） | `player_profile`、`recent_joins`、`binding_stats`、`server_status_history`、`event_leaderboard` |
+
+<Callout type="info">
+  `player_profile`、`placeholder_rank`、`player_statistics`、`player_advancements`、`player_equipment` 这五种数据源都针对**聊天发起者绑定的玩家**：发起者未绑定账号时，解析结果为 `null`——即使 `required: true` 也不会报错（这是运行时数据缺失，不是服务器能力不支持），模板需自行处理 `null`。
+</Callout>
+
+### `online_players` — 在线玩家
+
+```json
+{ "type": "online_players", "id": "players" }
+```
+
+解析结果（注入到 `data.players`）：
+
+```ts
+Array<{
+  name: string;
+  uuid: string;
+  displayName?: string;
+  gameMode?: string;
+  world?: string;
+  ping?: number;
+}>;
+```
+
+### `server_status` — 服务器状态
+
+```json
+{ "type": "server_status", "id": "status" }
+```
+
+解析结果：
+
+```ts
+{
+  online: number;
+  max: number;
+  tps?: number;   // Paper 专有，Spigot/Bukkit 上可能缺失
+  mspt?: number;  // 同上
+  worlds: Array<{ name: string; playerCount: number }>;
+}
+```
+
+### `placeholder` — PlaceholderAPI 变量
+
+```json
+{
+  "type": "placeholder",
+  "id": "coins",
+  "target": "online_players",
+  "placeholders": ["%vault_eco_balance%"],
+  "limit": 50,
+  "required": false
+}
+```
+
+| 字段               | 说明                                                                            |
+| ------------------ | ------------------------------------------------------------------------------- |
+| `target`           | `"self"`（指令发送者绑定的玩家）、`"online_players"`（在线玩家）、`"known_players"`（该服已知玩家） |
+| `placeholders`     | 要解析的占位符数组（1–20 个）                                                    |
+| `placeholdersFrom` | 引用 `configSchema` 中某个 `type: "placeholders"` 字段的 `key`；解析时与 `placeholders` 合并去重（合计 ≤20），让管理员可自定义/追加占位符 |
+| `limit`            | 玩家数上限；`known_players` 默认 50，硬上限 200                                  |
+
+解析结果：
+
+```ts
+// target 为 online_players / known_players：
+Array<{ name: string; uuid: string; values: Record<string, string> }>;
+// target 为 self（未绑定时为 null）：
+{ name: string; uuid: string; values: Record<string, string> } | null;
+```
+
+<Callout type="info">
+  排序与取 TopN 请在模板自己的 JS 里完成——宿主只负责按声明拉取原始数据。
+</Callout>
+
+### `player_profile` — 聊天发起者档案
+
+```json
+{ "type": "player_profile", "id": "profile" }
+```
+
+解析结果（发起者未绑定账号时为 `null`）：
+
+```ts
+{
+  uuid: string;
+  name: string;
+  firstJoinedAt: string | null; // ISO 时间；从未加入本服时为 null
+  social: {
+    platform: string;
+    uid: string;
+    nickname: string | null;
+    boundAt: string; // ISO 时间
+  } | null; // 未绑定平台账号时为 null
+} | null;
+```
+
+纯 Nexus 数据库数据（`player` + `player_server` + `social_account`），不依赖 MC 端能力。
+
+### `recent_joins` — 最近加入的玩家
+
+```json
+{ "type": "recent_joins", "id": "joins", "limit": 10, "withinDays": 7 }
+```
+
+| 字段         | 说明                                                 |
+| ------------ | ---------------------------------------------------- |
+| `limit`      | 返回数量上限，默认 10，最多 50                       |
+| `withinDays` | 仅统计最近 N 天内首次加入的玩家（可选，最多 365）    |
+
+解析结果：
+
+```ts
+Array<{ uuid: string; name: string; joinedAt: string }>; // joinedAt 为 ISO 时间
+```
+
+纯 Nexus 数据库数据（`player_server.createdAt`），不依赖 MC 端能力。
+
+### `binding_stats` — 账号绑定统计
+
+```json
+{ "type": "binding_stats", "id": "stats" }
+```
+
+解析结果：
+
+```ts
+{
+  total: number; // 该服已知玩家总数
+  bound: number; // 已绑定平台账号的玩家数
+  unbound: number; // 未绑定的玩家数
+  byPlatform: Array<{ platform: string; count: number }>;
+}
+```
+
+纯 Nexus 数据库数据（`player_server` + `social_account` 聚合），不依赖 MC 端能力。
+
+### `placeholder_rank` — PAPI 占位符排名
+
+```json
+{
+  "type": "placeholder_rank",
+  "id": "rank",
+  "placeholder": "%vault_eco_balance%",
+  "order": "desc",
+  "limit": 100
+}
+```
+
+| 字段          | 说明                                                     |
+| ------------- | --------------------------------------------------------- |
+| `placeholder` | 用于排名的单个 PAPI 占位符                              |
+| `order`       | `"desc"`（数值越大名次越高，默认）或 `"asc"`            |
+| `limit`       | 参与排名的玩家池上限（该服已知玩家），默认 100，最多 200 |
+
+解析结果（发起者未绑定账号时为 `null`）：
+
+```ts
+{
+  uuid: string;
+  name: string;
+  value: string; // 占位符原始字符串值
+  numeric: number | null; // 解析出的数值；无法解析为数字时为 null
+  rank: number | null; // 名次（1 为最高）；numeric 为 null 时也为 null
+  total: number; // 参与排名（数值可解析）的玩家总数
+} | null;
+```
+
+<Callout type="info">
+  排名只统计能解析为数值的占位符值（剥离货币符号/千分位等非数字字符后）；发起者本人若不在已知玩家池中会被自动加入参与排名。
+</Callout>
+
+### `server_status_history` — 服务器状态历史
+
+```json
+{ "type": "server_status_history", "id": "history", "windowMinutes": 60 }
+```
+
+| 字段            | 说明                                              |
+| --------------- | -------------------------------------------------- |
+| `windowMinutes` | 回溯时间窗口（分钟），默认 60，最多 720（12 小时）|
+
+解析结果（按时间升序）：
+
+```ts
+Array<{
+  t: string; // ISO 时间
+  online: number;
+  tps: number | null; // Paper 专有，缺失为 null
+  mspt: number | null; // 同上
+}>;
+```
+
+<Callout type="info">
+  数据来自 Nexus 后台采集器（每 60 秒采样一次、保留 7 天），不依赖 MC 端实时能力——即使服务器当前离线，仍能渲染历史趋势图。
+</Callout>
+
+### `event_leaderboard` — 事件排行榜
+
+```json
+{
+  "type": "event_leaderboard",
+  "id": "deaths",
+  "event": "player.death",
+  "windowDays": 7,
+  "limit": 10
+}
+```
+
+| 字段         | 说明                                                                       |
+| ------------ | --------------------------------------------------------------------------- |
+| `event`      | 统计的事件类型：`"player.death"` \| `"player.join"` \| `"player.leave"`   |
+| `windowDays` | 统计时间窗口（天），默认 7，最多 90                                       |
+| `limit`      | 上榜数量，默认 10，最多 25                                                |
+
+解析结果（按 `count` 降序）：
+
+```ts
+Array<{
+  playerUuid: string;
+  playerName: string | null; // 最近一条事件中的名字快照
+  count: number;
+  lastAt: string; // 最近一条匹配事件的发生时间，ISO
+  lastData: Record<string, unknown> | null; // 该事件的 payload（如死亡消息），无则 null
+}>;
+```
+
+纯 Nexus 数据库数据（`player_event` 表），不依赖 MC 端能力。
+
+### `player_statistics` — 玩家 Vanilla 统计
+
+```json
+{
+  "type": "player_statistics",
+  "id": "stats",
+  "statistics": ["DEATHS", "PLAYER_KILLS", "PLAY_ONE_MINUTE"]
+}
+```
+
+| 字段         | 说明                                                       |
+| ------------ | ------------------------------------------------------------ |
+| `statistics` | 要读取的 Bukkit `Statistic` 枚举名数组（UNTYPED，1–20 个） |
+
+解析结果（发起者未绑定账号时为 `null`）：
+
+```ts
+{
+  uuid: string;
+  name: string;
+  values: Record<string, number>; // 统计名 → 数值；缺失的统计名不返回
+} | null;
+```
+
+需 FGateClient `statistics` 能力（无需 PAPI）。
+
+### `player_advancements` — 玩家成就进度
+
+```json
+{ "type": "player_advancements", "id": "adv" }
+```
+
+解析结果（发起者未绑定账号时为 `null`）：
+
+```ts
+{
+  uuid: string;
+  name: string;
+  online: boolean; // 仅在线玩家有数据
+  completed: number;
+  total: number;
+  advancements: Array<{
+    key: string;
+    name: string | null;
+    icon: string | null; // Material 名（小写），用于图标渲染
+    block: boolean; // icon 是否为方块材质
+    done: boolean;
+  }>;
+} | null;
+```
+
+需 FGateClient `advancements` 能力；仅在线玩家有数据（离线时 `online: false`，`advancements` 为空数组）。
+
+### `player_equipment` — 玩家当前装备
+
+```json
+{ "type": "player_equipment", "id": "equip" }
+```
+
+解析结果（发起者未绑定账号时为 `null`）：
+
+```ts
+{
+  uuid: string;
+  name: string;
+  online: boolean; // 仅在线玩家有数据
+  items: Array<{
+    slot: string;
+    type: string; // Material 名
+    amount: number;
+    enchantments: Array<{ name: string; level: number }>;
+  }>;
+} | null;
+```
+
+需 FGateClient `equipment` 能力；仅在线玩家有数据（离线时 `online: false`，`items` 为空数组）。
+
+## 可配置参数 `configSchema`
+
+每一项驱动管理面板里的一个表单控件。通用字段：`key`（结果 key，`^[a-zA-Z_][a-zA-Z0-9_]*$`）、`label`、`description?`、`default?`。
+
+| `type`        | 额外字段              | 渲染控件         |
+| ------------- | --------------------- | ---------------- |
+| `string`      | `maxLength?`          | 文本框           |
+| `number`      | `min?` / `max?`       | 数字框           |
+| `boolean`     | —                     | 开关             |
+| `color`       | —                     | 取色器 + 文本框  |
+| `select`      | `options: {label,value}[]` | 下拉框      |
+| `placeholder` | —                     | 占位符输入框     |
+| `placeholders` | `max?`（≤20）、`default?: {label, placeholder}[]`（≤20） | 占位符列表编辑器（管理员添加多组「显示名称 + PAPI 占位符」） |
+
+```json
+{
+  "configSchema": [
+    { "type": "string", "key": "title", "label": "标题", "default": "金币榜" },
+    { "type": "color", "key": "accent", "label": "强调色", "default": "#22c55e" },
+    { "type": "number", "key": "topN", "label": "显示人数", "default": 10, "min": 1, "max": 50 },
+    { "type": "placeholders", "key": "extraStats", "label": "额外统计项", "max": 5 }
+  ]
+}
+```
+
+这些值会在渲染时通过 [`getConfig()`](./sdk) 注入到模板，key 即 `configSchema[].key`。
+
+`placeholders` 类型的字段可被某个 `placeholder` 数据源通过 `placeholdersFrom` 引用，让管理员在不修改模板的前提下追加要查询的 PAPI 占位符：
+
+```json
+{
+  "dataSources": [
+    {
+      "type": "placeholder",
+      "id": "coins",
+      "target": "self",
+      "placeholders": ["%vault_eco_balance%"],
+      "placeholdersFrom": "extraStats"
+    }
+  ],
+  "configSchema": [
+    { "type": "placeholders", "key": "extraStats", "label": "额外统计项", "max": 5 }
+  ]
+}
+```

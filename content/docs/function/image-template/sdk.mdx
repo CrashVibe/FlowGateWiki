@@ -1,0 +1,67 @@
+---
+title: SDK 用法
+description: 使用 @fgate/template-sdk 读取数据、配置并通知截图
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+渲染时，宿主会在页面加载前注入全局对象 `window.__FGATE_TEMPLATE__`。`@fgate/template-sdk` 是对它的类型安全封装。
+
+## API
+
+| 函数              | 说明                                                                 |
+| ----------------- | -------------------------------------------------------------------- |
+| `getData<T>()`    | 读取数据源解析结果，key 为 `dataSources[].id`                        |
+| `getConfig<T>()`  | 读取管理员配置，key 为 `configSchema[].key`                          |
+| `getMeta()`       | 读取元信息 `{ instanceName, serverName, templateId, version }`       |
+| `ready()`         | 通知宿主「页面已渲染完成，可以截图」                                 |
+
+<Callout type="warn">
+  渲染前必须调用一次 `ready()`，否则宿主会等待至超时（约 5 秒）后才按当前状态截图。数据/字体/图片加载完、DOM 绘制完成后再调用。
+</Callout>
+
+## 最小示例
+
+假设 `manifest.json` 声明了一个 `online_players` 数据源（id 为 `players`）和一个 `string` 配置（key 为 `title`）：
+
+```ts
+import { getConfig, getData, ready } from "@fgate/template-sdk";
+
+interface Data {
+  players: Array<{ name: string; uuid: string; ping?: number }>;
+}
+interface Config {
+  title: string;
+}
+
+const { players } = getData<Data>();
+const { title } = getConfig<Config>();
+
+document.querySelector("#title")!.textContent = title;
+document.querySelector("#list")!.innerHTML = players
+  .map((p) => `<li>${p.name} — ${p.ping ?? "?"}ms</li>`)
+  .join("");
+
+// 渲染完成，通知宿主截图
+ready();
+```
+
+## 处理可降级的数据源
+
+如果某个数据源在 manifest 里是 `required: false`，它在不支持的服务器上会是 `null` 或 `[]`，模板需自行兜底：
+
+```ts
+const { coins } = getData<{ coins: Array<{ name: string; values: Record<string, string> }> | [] }>();
+
+if (coins.length === 0) {
+  showPlaceholder("当前服务器未安装 PlaceholderAPI");
+} else {
+  renderLeaderboard(coins);
+}
+
+ready();
+```
+
+## 安装
+
+v1 阶段 SDK 以 monorepo 源码形式提供。你可以直接把上述函数（仅几行，读取 `window.__FGATE_TEMPLATE__`）内联到项目里，也可以从 FlowGate 仓库的 `packages/template-sdk` 复制使用；后续会发布到 npm。

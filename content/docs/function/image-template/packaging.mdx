@@ -1,0 +1,128 @@
+---
+title: 打包与上传
+description: 模板包目录结构、打包为 zip，以及一个端到端示例
+---
+
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+
+## 目录结构
+
+打包后的 `.zip` 解压后必须是这样的结构：
+
+```text
+your-template.zip
+├── manifest.json      # 模板清单（必需）
+└── dist/
+    └── index.html     # 入口页面（必需），可引用同目录下的 css/js/字体/图片
+```
+
+<Callout type="warn">
+  入口固定为 `dist/index.html`。所有静态资源请放在 `dist/` 内并用**相对路径**引用——渲染时默认禁止外部网络请求（防止三方代码外联），`file:` 与 `data:` 之外的请求会被拦截。需要的字体、图标请打包进 `dist/` 或用 base64 内联。
+</Callout>
+
+上传时的限制：解压后总体积 ≤ 50MB、文件数 ≤ 1000；压缩包会做 zip-slip / zip-bomb 校验。
+
+## 端到端示例
+
+下面用原生 HTML 做一个「在线玩家列表」模板。
+
+<Steps>
+  <Step>
+    ### 编写 `manifest.json`
+
+    ```json
+    {
+      "id": "online-list",
+      "name": "在线玩家列表",
+      "version": "1.0.0",
+      "viewport": "auto",
+      "dataSources": [{ "type": "online_players", "id": "players" }],
+      "configSchema": [
+        { "type": "string", "key": "title", "label": "标题", "default": "在线玩家" },
+        { "type": "color", "key": "accent", "label": "强调色", "default": "#22c55e" }
+      ]
+    }
+    ```
+  </Step>
+  <Step>
+    ### 编写 `dist/index.html`
+
+    ```html
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <style>
+          body { margin: 0; padding: 24px; width: 420px; font-family: sans-serif; background: #0b0b0f; color: #fff; }
+          h1 { font-size: 20px; margin: 0 0 16px; }
+          li { padding: 8px 12px; border-radius: 8px; background: #16161d; margin-bottom: 6px; }
+        </style>
+      </head>
+      <body>
+        <h1 id="title"></h1>
+        <ul id="list"></ul>
+        <script type="module">
+          // 这里直接读取宿主注入的全局对象（等价于 @fgate/template-sdk）
+          const ctx = window.__FGATE_TEMPLATE__;
+          const { players } = ctx.data;
+          const { title, accent } = ctx.config;
+
+          document.getElementById("title").textContent = title;
+          document.getElementById("title").style.color = accent;
+          document.getElementById("list").innerHTML = players
+            .map((p) => `<li>${p.name}</li>`)
+            .join("");
+
+          ctx.ready();
+        </script>
+      </body>
+    </html>
+    ```
+  </Step>
+  <Step>
+    ### 打包为 zip
+
+    在包含 `manifest.json` 与 `dist/` 的目录下执行：
+
+    ```bash
+    zip -r online-list.zip manifest.json dist
+    ```
+
+    确保压缩包**根目录**就是 `manifest.json` 与 `dist/`（不要多套一层文件夹）。
+  </Step>
+  <Step>
+    ### 上传并使用
+
+    在管理面板 **图片模板** 页上传该 zip，然后在某个服务器的 **图片模板** 页创建实例、填写标题与颜色、绑定指令并预览。完整流程见[图片模板（管理指南）](/docs/core/config/template)。
+  </Step>
+</Steps>
+
+## 多平台降级示例
+
+如果你想在 `online_players` 之外再展示金币（PlaceholderAPI），但又希望模板在没装 PAPI 的服务器上依然可用，把 `placeholder` 数据源标记为 `required: false`：
+
+```json
+{
+  "dataSources": [
+    { "type": "online_players", "id": "players" },
+    {
+      "type": "placeholder",
+      "id": "coins",
+      "target": "online_players",
+      "placeholders": ["%vault_eco_balance%"],
+      "required": false
+    }
+  ]
+}
+```
+
+模板里判断 `coins` 是否为空来决定展示：
+
+```js
+const { players, coins } = window.__FGATE_TEMPLATE__.data;
+const hasCoins = Array.isArray(coins) && coins.length > 0;
+// hasCoins 为 false 时只渲染玩家名，不显示金币列
+```
+
+这样同一个模板包既能在装了 PAPI 的服务器上显示金币榜，也能在未装 PAPI 的服务器上降级为普通在线列表。

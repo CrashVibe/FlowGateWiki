@@ -1,0 +1,5 @@
+{
+  "title": "图片模板开发",
+  "icon": "Image",
+  "pages": ["index", "manifest", "sdk", "packaging"]
+}
