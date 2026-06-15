@@ -8,4 +8,4 @@ export const gitConfig = {
   branch: "main",
   repo: "FlowGateWiki",
   user: "CrashVibe",
-};
+}

@@ -3,8 +3,8 @@ title: 打包与上传
 description: 模板包目录结构、打包为 zip，以及一个端到端示例
 ---
 
-import { Step, Steps } from "fumadocs-ui/components/steps";
-import { Callout } from "fumadocs-ui/components/callout";
+import { Step, Steps } from "fumadocs-ui/components/steps"
+import { Callout } from "fumadocs-ui/components/callout"
 
 ## 目录结构
 
@@ -18,7 +18,9 @@ your-template.zip
 ```
 
 <Callout type="warn">
-  入口固定为 `dist/index.html`。所有静态资源请放在 `dist/` 内并用**相对路径**引用——渲染时默认禁止外部网络请求（防止三方代码外联），`file:` 与 `data:` 之外的请求会被拦截。需要的字体、图标请打包进 `dist/` 或用 base64 内联。
+  入口固定为 `dist/index.html`。所有静态资源请放在 `dist/`
+  内并用**相对路径**引用——渲染时默认禁止外部网络请求（防止三方代码外联），`file:` 与 `data:`
+  之外的请求会被拦截。需要的字体、图标请打包进 `dist/` 或用 base64 内联。
 </Callout>
 
 上传时的限制：解压后总体积 ≤ 50MB、文件数 ≤ 1000；压缩包会做 zip-slip / zip-bomb 校验。
@@ -44,6 +46,7 @@ your-template.zip
       ]
     }
     ```
+
   </Step>
   <Step>
     ### 编写 `dist/index.html`
@@ -79,6 +82,7 @@ your-template.zip
       </body>
     </html>
     ```
+
   </Step>
   <Step>
     ### 打包为 zip
@@ -90,11 +94,13 @@ your-template.zip
     ```
 
     确保压缩包**根目录**就是 `manifest.json` 与 `dist/`（不要多套一层文件夹）。
+
   </Step>
   <Step>
     ### 上传并使用
 
     在管理面板 **图片模板** 页上传该 zip，然后在某个服务器的 **图片模板** 页创建实例、填写标题与颜色、绑定指令并预览。完整流程见[图片模板（管理指南）](/docs/core/config/template)。
+
   </Step>
 </Steps>
 
@@ -120,8 +126,8 @@ your-template.zip
 模板里判断 `coins` 是否为空来决定展示：
 
 ```js
-const { players, coins } = window.__FGATE_TEMPLATE__.data;
-const hasCoins = Array.isArray(coins) && coins.length > 0;
+const { players, coins } = window.__FGATE_TEMPLATE__.data
+const hasCoins = Array.isArray(coins) && coins.length > 0
 // hasCoins 为 false 时只渲染玩家名，不显示金币列
 ```
 

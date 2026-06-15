@@ -3,9 +3,9 @@ title: Discord 适配器
 description: 把你的 Discord 机器人接入 FlowGate，让它能收发消息。
 ---
 
-import { Step, Steps } from "fumadocs-ui/components/steps";
-import { Callout } from "fumadocs-ui/components/callout";
-import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps"
+import { Callout } from "fumadocs-ui/components/callout"
+import { Tab, Tabs } from "fumadocs-ui/components/tabs"
 
 这篇文档教你怎么把一个 Discord 机器人接进 FlowGate 的 sender 功能。整个流程分两块：先去 Discord 开发者后台把机器人建好、权限开好，再回到 FlowGate 填配置。
 
@@ -42,7 +42,9 @@ import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 - **Server Members Intent** — 打开
 - **Message Content Intent** — 打开
 
-<Callout type="warn">这两个开关如果不开，机器人收不到消息内容，FlowGate 那边就啥也拿不到。记得保存。</Callout>
+<Callout type="warn">
+  这两个开关如果不开，机器人收不到消息内容，FlowGate 那边就啥也拿不到。记得保存。
+</Callout>
 
 开完之后点页面底部的 **Save Changes**。
 

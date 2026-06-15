@@ -1,6 +1,6 @@
-"use client";
-import { useDocsSearch } from "fumadocs-core/search/client";
-import type { SharedProps } from "fumadocs-ui/components/dialog/search";
+"use client"
+import type { SharedProps } from "fumadocs-ui/components/dialog/search"
+import { useDocsSearch } from "fumadocs-core/search/client"
 import {
   SearchDialog,
   SearchDialogClose,
@@ -10,15 +10,15 @@ import {
   SearchDialogInput,
   SearchDialogList,
   SearchDialogOverlay,
-} from "fumadocs-ui/components/dialog/search";
-import { useI18n } from "fumadocs-ui/contexts/i18n";
+} from "fumadocs-ui/components/dialog/search"
+import { useI18n } from "fumadocs-ui/contexts/i18n"
 
 export default function DefaultSearchDialog(props: SharedProps) {
-  const { locale } = useI18n();
+  const { locale } = useI18n()
   const { search, setSearch, query } = useDocsSearch({
     locale,
     type: "fetch",
-  });
+  })
 
   return (
     <SearchDialog search={search} onSearchChange={setSearch} isLoading={query.isLoading} {...props}>
@@ -32,5 +32,5 @@ export default function DefaultSearchDialog(props: SharedProps) {
         <SearchDialogList items={query.data === "empty" ? null : query.data} />
       </SearchDialogContent>
     </SearchDialog>
-  );
+  )
 }

@@ -1,14 +1,19 @@
-import * as Separator from "@radix-ui/react-separator";
+import * as Separator from "@radix-ui/react-separator"
 
-import { Button } from "@/components/button";
+import { Button } from "@/components/button"
 
 export const HeroSection = () => (
   <>
     <section className="flex flex-col items-center gap-6 pt-4 pb-8 text-center md:pt-8 md:pb-16">
-      <p className="text-fd-muted-foreground text-xs tracking-widest uppercase">Minecraft Server Chat Bridge</p>
+      <p className="text-fd-muted-foreground text-xs tracking-widest uppercase">
+        Minecraft Server Chat Bridge
+      </p>
 
       <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl">
-        FGATE <span className="bg-linear-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent">Nexus</span>
+        FGATE{" "}
+        <span className="bg-linear-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent">
+          Nexus
+        </span>
       </h1>
 
       <p className="text-fd-muted-foreground max-w-2xl text-lg leading-relaxed sm:text-xl">
@@ -34,4 +39,4 @@ export const HeroSection = () => (
 
     <Separator.Root className="bg-fd-border/50 mb-12 h-px" />
   </>
-);
+)

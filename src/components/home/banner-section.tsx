@@ -1,4 +1,4 @@
-import { Button } from "@/components/button";
+import { Button } from "@/components/button"
 
 export const BannerSection = () => (
   <div className="border-fd-border relative mt-4 overflow-hidden rounded-xl border bg-[linear-gradient(var(--color-fd-border)_1px,transparent_1px),linear-gradient(to_right,var(--color-fd-border)_1px,transparent_1px)] bg-size-[48px_48px] py-10 sm:py-16">
@@ -27,4 +27,4 @@ export const BannerSection = () => (
     </div>
     <div className="absolute inset-0 z-0 [background:radial-gradient(ellipse_at_center,transparent_40%,var(--color-fd-background)_100%)]" />
   </div>
-);
+)

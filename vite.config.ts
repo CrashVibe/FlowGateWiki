@@ -1,7 +1,4 @@
-import { cloudflare } from "@cloudflare/vite-plugin";
-import mdx from "fumadocs-mdx/vite";
-import vinext from "vinext";
-import { defineConfig } from "vite";
+import { cloudflare } from "@cloudflare/vite-plugin"
 import tailwindcss from "@tailwindcss/vite"
 import mdx from "fumadocs-mdx/vite"
 import vinext from "vinext"
@@ -34,4 +31,4 @@ export default defineConfig(() => ({
   resolve: {
     tsconfigPaths: true,
   },
-}));
+}))

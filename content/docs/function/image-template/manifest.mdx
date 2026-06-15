@@ -3,7 +3,7 @@ title: Manifest 格式
 description: manifest.json 字段参考——数据源与可配置参数
 ---
 
-import { Callout } from "fumadocs-ui/components/callout";
+import { Callout } from "fumadocs-ui/components/callout"
 
 每个模板包根目录必须有一个 `manifest.json`。入口页面固定为 `dist/index.html`（不可自定义路径）。
 
@@ -22,16 +22,16 @@ import { Callout } from "fumadocs-ui/components/callout";
 }
 ```
 
-| 字段           | 类型                                   | 说明                                                            |
-| -------------- | -------------------------------------- | --------------------------------------------------------------- |
-| `id`           | string                                 | 唯一标识/目录名，`^[a-z0-9][a-z0-9-_]{1,63}$`（2–64 位小写）     |
-| `name`         | string                                 | 显示名称                                                        |
-| `version`      | string                                 | 模板包版本（与协议版本无关）                                    |
-| `author`       | string?                                | 作者（可选）                                                    |
-| `description`  | string?                                | 描述（可选）                                                    |
-| `viewport`     | `"auto"` 或 `{ width, height }`        | 截图视口；`auto` 按页面 body 包围盒自适应。默认 `"auto"`        |
-| `dataSources`  | 数组（最多 10）                        | 声明需要的数据源，见下                                          |
-| `configSchema` | 数组（最多 50）                        | 声明管理员可自定义的参数，见下                                  |
+| 字段           | 类型                            | 说明                                                         |
+| -------------- | ------------------------------- | ------------------------------------------------------------ |
+| `id`           | string                          | 唯一标识/目录名，`^[a-z0-9][a-z0-9-_]{1,63}$`（2–64 位小写） |
+| `name`         | string                          | 显示名称                                                     |
+| `version`      | string                          | 模板包版本（与协议版本无关）                                 |
+| `author`       | string?                         | 作者（可选）                                                 |
+| `description`  | string?                         | 描述（可选）                                                 |
+| `viewport`     | `"auto"` 或 `{ width, height }` | 截图视口；`auto` 按页面 body 包围盒自适应。默认 `"auto"`     |
+| `dataSources`  | 数组（最多 10）                 | 声明需要的数据源，见下                                       |
+| `configSchema` | 数组（最多 50）                 | 声明管理员可自定义的参数，见下                               |
 
 ## 数据源 `dataSources`
 
@@ -42,14 +42,16 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 按所需能力分组：
 
-| 分组                          | 类型                                                                                     |
-| ----------------------------- | ---------------------------------------------------------------------------------------- |
+| 分组                           | 类型                                                                                              |
+| ------------------------------ | ------------------------------------------------------------------------------------------------- |
 | MC 服务器能力（FGateClient）   | `online_players`、`server_status`、`player_statistics`、`player_advancements`、`player_equipment` |
-| PlaceholderAPI                | `placeholder`、`placeholder_rank`                                                       |
-| Nexus 数据库（无需 MC 端能力） | `player_profile`、`recent_joins`、`binding_stats`、`server_status_history`、`event_leaderboard` |
+| PlaceholderAPI                 | `placeholder`、`placeholder_rank`                                                                 |
+| Nexus 数据库（无需 MC 端能力） | `player_profile`、`recent_joins`、`binding_stats`、`server_status_history`、`event_leaderboard`   |
 
 <Callout type="info">
-  `player_profile`、`placeholder_rank`、`player_statistics`、`player_advancements`、`player_equipment` 这五种数据源都针对**聊天发起者绑定的玩家**：发起者未绑定账号时，解析结果为 `null`——即使 `required: true` 也不会报错（这是运行时数据缺失，不是服务器能力不支持），模板需自行处理 `null`。
+  `player_profile`、`placeholder_rank`、`player_statistics`、`player_advancements`、`player_equipment`
+  这五种数据源都针对**聊天发起者绑定的玩家**：发起者未绑定账号时，解析结果为 `null`——即使 `required:
+  true` 也不会报错（这是运行时数据缺失，不是服务器能力不支持），模板需自行处理 `null`。
 </Callout>
 
 ### `online_players` — 在线玩家
@@ -62,13 +64,13 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 ```ts
 Array<{
-  name: string;
-  uuid: string;
-  displayName?: string;
-  gameMode?: string;
-  world?: string;
-  ping?: number;
-}>;
+  name: string
+  uuid: string
+  displayName?: string
+  gameMode?: string
+  world?: string
+  ping?: number
+}>
 ```
 
 ### `server_status` — 服务器状态
@@ -102,12 +104,12 @@ Array<{
 }
 ```
 
-| 字段               | 说明                                                                            |
-| ------------------ | ------------------------------------------------------------------------------- |
-| `target`           | `"self"`（指令发送者绑定的玩家）、`"online_players"`（在线玩家）、`"known_players"`（该服已知玩家） |
-| `placeholders`     | 要解析的占位符数组（1–20 个）                                                    |
+| 字段               | 说明                                                                                                                                      |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `target`           | `"self"`（指令发送者绑定的玩家）、`"online_players"`（在线玩家）、`"known_players"`（该服已知玩家）                                       |
+| `placeholders`     | 要解析的占位符数组（1–20 个）                                                                                                             |
 | `placeholdersFrom` | 引用 `configSchema` 中某个 `type: "placeholders"` 字段的 `key`；解析时与 `placeholders` 合并去重（合计 ≤20），让管理员可自定义/追加占位符 |
-| `limit`            | 玩家数上限；`known_players` 默认 50，硬上限 200                                  |
+| `limit`            | 玩家数上限；`known_players` 默认 50，硬上限 200                                                                                           |
 
 解析结果：
 
@@ -152,15 +154,15 @@ Array<{ name: string; uuid: string; values: Record<string, string> }>;
 { "type": "recent_joins", "id": "joins", "limit": 10, "withinDays": 7 }
 ```
 
-| 字段         | 说明                                                 |
-| ------------ | ---------------------------------------------------- |
-| `limit`      | 返回数量上限，默认 10，最多 50                       |
-| `withinDays` | 仅统计最近 N 天内首次加入的玩家（可选，最多 365）    |
+| 字段         | 说明                                              |
+| ------------ | ------------------------------------------------- |
+| `limit`      | 返回数量上限，默认 10，最多 50                    |
+| `withinDays` | 仅统计最近 N 天内首次加入的玩家（可选，最多 365） |
 
 解析结果：
 
 ```ts
-Array<{ uuid: string; name: string; joinedAt: string }>; // joinedAt 为 ISO 时间
+Array<{ uuid: string; name: string; joinedAt: string }> // joinedAt 为 ISO 时间
 ```
 
 纯 Nexus 数据库数据（`player_server.createdAt`），不依赖 MC 端能力。
@@ -175,10 +177,10 @@ Array<{ uuid: string; name: string; joinedAt: string }>; // joinedAt 为 ISO 时
 
 ```ts
 {
-  total: number; // 该服已知玩家总数
-  bound: number; // 已绑定平台账号的玩家数
-  unbound: number; // 未绑定的玩家数
-  byPlatform: Array<{ platform: string; count: number }>;
+  total: number // 该服已知玩家总数
+  bound: number // 已绑定平台账号的玩家数
+  unbound: number // 未绑定的玩家数
+  byPlatform: Array<{ platform: string; count: number }>
 }
 ```
 
@@ -197,9 +199,9 @@ Array<{ uuid: string; name: string; joinedAt: string }>; // joinedAt 为 ISO 时
 ```
 
 | 字段          | 说明                                                     |
-| ------------- | --------------------------------------------------------- |
-| `placeholder` | 用于排名的单个 PAPI 占位符                              |
-| `order`       | `"desc"`（数值越大名次越高，默认）或 `"asc"`            |
+| ------------- | -------------------------------------------------------- |
+| `placeholder` | 用于排名的单个 PAPI 占位符                               |
+| `order`       | `"desc"`（数值越大名次越高，默认）或 `"asc"`             |
 | `limit`       | 参与排名的玩家池上限（该服已知玩家），默认 100，最多 200 |
 
 解析结果（发起者未绑定账号时为 `null`）：
@@ -225,23 +227,24 @@ Array<{ uuid: string; name: string; joinedAt: string }>; // joinedAt 为 ISO 时
 { "type": "server_status_history", "id": "history", "windowMinutes": 60 }
 ```
 
-| 字段            | 说明                                              |
+| 字段            | 说明                                               |
 | --------------- | -------------------------------------------------- |
-| `windowMinutes` | 回溯时间窗口（分钟），默认 60，最多 720（12 小时）|
+| `windowMinutes` | 回溯时间窗口（分钟），默认 60，最多 720（12 小时） |
 
 解析结果（按时间升序）：
 
 ```ts
 Array<{
-  t: string; // ISO 时间
-  online: number;
-  tps: number | null; // Paper 专有，缺失为 null
-  mspt: number | null; // 同上
-}>;
+  t: string // ISO 时间
+  online: number
+  tps: number | null // Paper 专有，缺失为 null
+  mspt: number | null // 同上
+}>
 ```
 
 <Callout type="info">
-  数据来自 Nexus 后台采集器（每 60 秒采样一次、保留 7 天），不依赖 MC 端实时能力——即使服务器当前离线，仍能渲染历史趋势图。
+  数据来自 Nexus 后台采集器（每 60 秒采样一次、保留 7 天），不依赖 MC
+  端实时能力——即使服务器当前离线，仍能渲染历史趋势图。
 </Callout>
 
 ### `event_leaderboard` — 事件排行榜
@@ -256,22 +259,22 @@ Array<{
 }
 ```
 
-| 字段         | 说明                                                                       |
-| ------------ | --------------------------------------------------------------------------- |
-| `event`      | 统计的事件类型：`"player.death"` \| `"player.join"` \| `"player.leave"`   |
-| `windowDays` | 统计时间窗口（天），默认 7，最多 90                                       |
-| `limit`      | 上榜数量，默认 10，最多 25                                                |
+| 字段         | 说明                                                                    |
+| ------------ | ----------------------------------------------------------------------- |
+| `event`      | 统计的事件类型：`"player.death"` \| `"player.join"` \| `"player.leave"` |
+| `windowDays` | 统计时间窗口（天），默认 7，最多 90                                     |
+| `limit`      | 上榜数量，默认 10，最多 25                                              |
 
 解析结果（按 `count` 降序）：
 
 ```ts
 Array<{
-  playerUuid: string;
-  playerName: string | null; // 最近一条事件中的名字快照
-  count: number;
-  lastAt: string; // 最近一条匹配事件的发生时间，ISO
-  lastData: Record<string, unknown> | null; // 该事件的 payload（如死亡消息），无则 null
-}>;
+  playerUuid: string
+  playerName: string | null // 最近一条事件中的名字快照
+  count: number
+  lastAt: string // 最近一条匹配事件的发生时间，ISO
+  lastData: Record<string, unknown> | null // 该事件的 payload（如死亡消息），无则 null
+}>
 ```
 
 纯 Nexus 数据库数据（`player_event` 表），不依赖 MC 端能力。
@@ -287,7 +290,7 @@ Array<{
 ```
 
 | 字段         | 说明                                                       |
-| ------------ | ------------------------------------------------------------ |
+| ------------ | ---------------------------------------------------------- |
 | `statistics` | 要读取的 Bukkit `Statistic` 枚举名数组（UNTYPED，1–20 个） |
 
 解析结果（发起者未绑定账号时为 `null`）：
@@ -357,14 +360,14 @@ Array<{
 
 每一项驱动管理面板里的一个表单控件。通用字段：`key`（结果 key，`^[a-zA-Z_][a-zA-Z0-9_]*$`）、`label`、`description?`、`default?`。
 
-| `type`        | 额外字段              | 渲染控件         |
-| ------------- | --------------------- | ---------------- |
-| `string`      | `maxLength?`          | 文本框           |
-| `number`      | `min?` / `max?`       | 数字框           |
-| `boolean`     | —                     | 开关             |
-| `color`       | —                     | 取色器 + 文本框  |
-| `select`      | `options: {label,value}[]` | 下拉框      |
-| `placeholder` | —                     | 占位符输入框     |
+| `type`         | 额外字段                                                 | 渲染控件                                                     |
+| -------------- | -------------------------------------------------------- | ------------------------------------------------------------ |
+| `string`       | `maxLength?`                                             | 文本框                                                       |
+| `number`       | `min?` / `max?`                                          | 数字框                                                       |
+| `boolean`      | —                                                        | 开关                                                         |
+| `color`        | —                                                        | 取色器 + 文本框                                              |
+| `select`       | `options: {label,value}[]`                               | 下拉框                                                       |
+| `placeholder`  | —                                                        | 占位符输入框                                                 |
 | `placeholders` | `max?`（≤20）、`default?: {label, placeholder}[]`（≤20） | 占位符列表编辑器（管理员添加多组「显示名称 + PAPI 占位符」） |
 
 ```json
@@ -393,8 +396,6 @@ Array<{
       "placeholdersFrom": "extraStats"
     }
   ],
-  "configSchema": [
-    { "type": "placeholders", "key": "extraStats", "label": "额外统计项", "max": 5 }
-  ]
+  "configSchema": [{ "type": "placeholders", "key": "extraStats", "label": "额外统计项", "max": 5 }]
 }
 ```

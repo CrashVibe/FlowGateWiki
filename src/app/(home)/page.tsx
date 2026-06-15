@@ -1,9 +1,9 @@
-import type { JSX } from "react";
+import type { JSX } from "react"
 
-import { BannerSection } from "@/components/home/banner-section";
-import { FeaturesSection } from "@/components/home/features-section";
-import { HeroSection } from "@/components/home/hero-section";
-import { PreviewSection } from "@/components/home/preview-section";
+import { BannerSection } from "@/components/home/banner-section"
+import { FeaturesSection } from "@/components/home/features-section"
+import { HeroSection } from "@/components/home/hero-section"
+import { PreviewSection } from "@/components/home/preview-section"
 
 export default function HomePage(): JSX.Element {
   return (
@@ -13,5 +13,5 @@ export default function HomePage(): JSX.Element {
       <FeaturesSection />
       <BannerSection />
     </main>
-  );
+  )
 }

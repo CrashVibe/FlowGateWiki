@@ -1,6 +1,6 @@
-import { Link2, MessageSquare, Server, Shield, Terminal, Zap } from "lucide-react";
+import { Link2, MessageSquare, Server, Shield, Terminal, Zap } from "lucide-react"
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/cn"
 
 const FeatureCard = ({
   icon: Icon,
@@ -9,11 +9,11 @@ const FeatureCard = ({
   tags,
   className,
 }: {
-  icon: React.ElementType;
-  title: string;
-  desc: string;
-  tags?: string[];
-  className?: string;
+  icon: React.ElementType
+  title: string
+  desc: string
+  tags?: string[]
+  className?: string
 }) => (
   <div className={cn("border-fd-border bg-fd-card rounded-xl border p-6", className)}>
     <div className="bg-fd-primary/10 text-fd-primary mb-4 inline-flex rounded-lg p-2.5">
@@ -34,9 +34,17 @@ const FeatureCard = ({
       </div>
     )}
   </div>
-);
+)
 
-const CompactCard = ({ icon: Icon, title, desc }: { icon: React.ElementType; title: string; desc: string }) => (
+const CompactCard = ({
+  icon: Icon,
+  title,
+  desc,
+}: {
+  icon: React.ElementType
+  title: string
+  desc: string
+}) => (
   <div className="border-fd-border bg-fd-card flex flex-1 items-start gap-3 rounded-xl border p-5">
     <div className="bg-fd-primary/10 text-fd-primary shrink-0 rounded-lg p-2">
       <Icon className="h-4 w-4" />
@@ -46,7 +54,7 @@ const CompactCard = ({ icon: Icon, title, desc }: { icon: React.ElementType; tit
       <p className="text-fd-muted-foreground text-xs leading-relaxed">{desc}</p>
     </div>
   </div>
-);
+)
 
 export const FeaturesSection = () => (
   <section className="pb-16">
@@ -63,11 +71,27 @@ export const FeaturesSection = () => (
         tags={["OneBot / QQ", "更多适配器开发中"]}
         className="sm:col-span-2"
       />
-      <FeatureCard icon={MessageSquare} title="消息双向同步" desc="游戏内聊天与外部平台实时互通，不错过任何消息。" />
-      <FeatureCard icon={Shield} title="安全认证" desc="支持密码与 2FA 双重认证，所有数据本地处理，不上传、不收集。" />
+      <FeatureCard
+        icon={MessageSquare}
+        title="消息双向同步"
+        desc="游戏内聊天与外部平台实时互通，不错过任何消息。"
+      />
+      <FeatureCard
+        icon={Shield}
+        title="安全认证"
+        desc="支持密码与 2FA 双重认证，所有数据本地处理，不上传、不收集。"
+      />
       <div className="flex flex-col gap-4">
-        <CompactCard icon={Link2} title="账号绑定" desc="玩家自助绑定 / 解绑平台账号，权限精细可控。" />
-        <CompactCard icon={Terminal} title="远程命令" desc="通过聊天平台直接下发服务器指令，随时随地管理。" />
+        <CompactCard
+          icon={Link2}
+          title="账号绑定"
+          desc="玩家自助绑定 / 解绑平台账号，权限精细可控。"
+        />
+        <CompactCard
+          icon={Terminal}
+          title="远程命令"
+          desc="通过聊天平台直接下发服务器指令，随时随地管理。"
+        />
       </div>
       <FeatureCard
         icon={Zap}
@@ -76,4 +100,4 @@ export const FeaturesSection = () => (
       />
     </div>
   </section>
-);
+)

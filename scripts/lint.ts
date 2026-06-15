@@ -1,18 +1,20 @@
-import type { InferPageType } from "fumadocs-core/source";
-import type { FileObject } from "next-validate-link";
-import { printErrors, scanURLs, validateFiles } from "next-validate-link";
+import type { InferPageType } from "fumadocs-core/source"
+import type { FileObject } from "next-validate-link"
+import { printErrors, scanURLs, validateFiles } from "next-validate-link"
 
-import { source } from "@/lib/source";
+import { source } from "@/lib/source"
 
 const getHeadings = async ({ data }: InferPageType<typeof source>): Promise<string[]> => {
-  const { toc } = await data.load();
-  return toc.map((item) => item.url.slice(1));
-};
+  const { toc } = await data.load()
+  return toc.map((item) => item.url.slice(1))
+}
 
 const getFiles = () => {
   const promises = source
     .getPages()
-    .filter((page): page is typeof page & { absolutePath: string } => page.absolutePath !== undefined)
+    .filter(
+      (page): page is typeof page & { absolutePath: string } => page.absolutePath !== undefined
+    )
     .map(
       async (page): Promise<FileObject> => ({
         content: await page.data.getText("raw"),
@@ -20,10 +22,10 @@ const getFiles = () => {
         path: page.absolutePath,
         url: page.url,
       })
-    );
+    )
 
-  return Promise.all(promises);
-};
+  return Promise.all(promises)
+}
 
 const checkLinks = async () => {
   const populateEntries = await Promise.all(
@@ -33,14 +35,14 @@ const checkLinks = async () => {
         slug: page.slugs,
       },
     }))
-  );
+  )
 
   const scanned = await scanURLs({
     populate: {
       "docs/[[...slug]]": populateEntries,
     },
     preset: "next",
-  });
+  })
 
   printErrors(
     await validateFiles(await getFiles(), {
@@ -53,7 +55,7 @@ const checkLinks = async () => {
       scanned,
     }),
     true
-  );
-};
+  )
+}
 
-await checkLinks();
+await checkLinks()

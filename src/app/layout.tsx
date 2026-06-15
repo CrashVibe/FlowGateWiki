@@ -1,14 +1,14 @@
-import { RootProvider } from "fumadocs-ui/provider/next";
-import type { Metadata } from "next";
+import type { Metadata } from "next"
+import { RootProvider } from "fumadocs-ui/provider/next"
 
-import "./global.css";
-import { Inter } from "next/font/google";
+import "./global.css"
+import { Inter } from "next/font/google"
 
-import SearchDialog from "@/components/search";
+import SearchDialog from "@/components/search"
 
 const inter = Inter({
   subsets: ["latin"],
-});
+})
 
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
@@ -23,10 +23,10 @@ export default function Layout({ children }: LayoutProps<"/">) {
         </RootProvider>
       </body>
     </html>
-  );
+  )
 }
 
-const metaTitle = "FlowGate 文档 - 跨平台的 Minecraft 服务器聊天桥接工具";
+const metaTitle = "FlowGate 文档 - 跨平台的 Minecraft 服务器聊天桥接工具"
 
 export const metadata: Metadata = {
   creator: "@CrashVibe Team",
@@ -45,4 +45,4 @@ Nuxt 4 项目，
     type: "website",
   },
   title: { default: metaTitle, template: "%s | FlowGate" },
-};
+}

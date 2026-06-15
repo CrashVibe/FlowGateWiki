@@ -3,7 +3,7 @@ title: 概述
 description: 用任意前端框架开发 FlowGate 图片模板
 ---
 
-import { Callout } from "fumadocs-ui/components/callout";
+import { Callout } from "fumadocs-ui/components/callout"
 
 图片模板是一段**静态前端页面**（HTML/CSS/JS，可由 React/Vue/Svelte/原生等任意框架打包），由 FlowGate Nexus 在无头浏览器中渲染并截图，最终作为图片消息发送到聊天平台。
 
@@ -28,11 +28,11 @@ import { Callout } from "fumadocs-ui/components/callout";
 
 模板声明的每个**数据源**可能对应 MC 服务器的一种能力，也可能是纯 Nexus 数据库数据（不依赖 MC 端配合）。共 12 种数据源类型：
 
-| 分组                          | 数据源                                                                                  | 说明                                            |
-| ----------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| MC 服务器能力                  | `online_players`、`server_status`、`player_statistics`、`player_advancements`、`player_equipment` | 需 FGateClient 声明对应能力位，旧版客户端默认不支持 |
-| PlaceholderAPI                | `placeholder`、`placeholder_rank`                                                       | 仅安装了 PAPI 的 Paper/Bukkit 服务器             |
-| Nexus 数据库                   | `player_profile`、`recent_joins`、`binding_stats`、`server_status_history`、`event_leaderboard` | 不依赖 MC 端能力，服务器离线也可用              |
+| 分组           | 数据源                                                                                            | 说明                                                |
+| -------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| MC 服务器能力  | `online_players`、`server_status`、`player_statistics`、`player_advancements`、`player_equipment` | 需 FGateClient 声明对应能力位，旧版客户端默认不支持 |
+| PlaceholderAPI | `placeholder`、`placeholder_rank`                                                                 | 仅安装了 PAPI 的 Paper/Bukkit 服务器                |
+| Nexus 数据库   | `player_profile`、`recent_joins`、`binding_stats`、`server_status_history`、`event_leaderboard`   | 不依赖 MC 端能力，服务器离线也可用                  |
 
 每种数据源的具体字段与返回值，见 [Manifest 格式](./manifest)。
 
@@ -42,7 +42,8 @@ import { Callout } from "fumadocs-ui/components/callout";
 - `required: false`：能力不可用时该数据源降级为 `null`/`[]`，模板需自行处理缺失数据。
 
 <Callout type="info">
-  把不通用的能力（如 `placeholder`）标记为 `required: false`，就能让**同一个模板包**在支持与不支持该能力的服务器上都能工作——这就是「开发一次、支持多平台」的方式。
+  把不通用的能力（如 `placeholder`）标记为 `required:
+  false`，就能让**同一个模板包**在支持与不支持该能力的服务器上都能工作——这就是「开发一次、支持多平台」的方式。
 </Callout>
 
 接下来请阅读 [Manifest 格式](./image-template/manifest)、[SDK 用法](./image-template/sdk) 与 [打包与上传](./image-template/packaging)。

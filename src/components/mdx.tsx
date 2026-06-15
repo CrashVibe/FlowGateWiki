@@ -1,9 +1,9 @@
-import { ImageZoom } from "fumadocs-ui/components/image-zoom";
-import defaultComponents from "fumadocs-ui/mdx";
-import type { MDXComponents } from "mdx/types";
+import type { MDXComponents } from "mdx/types"
+import { ImageZoom } from "fumadocs-ui/components/image-zoom"
+import defaultComponents from "fumadocs-ui/mdx"
 
-import { Video } from "@/components/video";
-import { VersionFilename } from "@/components/version-filename";
+import { VersionFilename } from "@/components/version-filename"
+import { Video } from "@/components/video"
 
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
   return {
@@ -15,5 +15,5 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     // @ts-expect-error - img props not fully compatible with ImageZoom
     img: (props) => <ImageZoom {...props} />,
     ...components,
-  };
+  }
 }

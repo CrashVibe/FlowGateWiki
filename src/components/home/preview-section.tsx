@@ -1,31 +1,31 @@
-"use client";
+"use client"
 
-import * as Tabs from "@radix-ui/react-tabs";
-import * as Tooltip from "@radix-ui/react-tooltip";
-import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
-import Image from "next/image";
-import { useState } from "react";
+import * as Tabs from "@radix-ui/react-tabs"
+import * as Tooltip from "@radix-ui/react-tooltip"
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden"
+import Image from "next/image"
+import { useState } from "react"
 
-import preview1 from "@/app/assets/preview/1.webp";
-import preview2 from "@/app/assets/preview/2.webp";
-import { cn } from "@/lib/cn";
+import preview1 from "@/app/assets/preview/1.webp"
+import preview2 from "@/app/assets/preview/2.webp"
+import { cn } from "@/lib/cn"
 
 const windowDots = [
   { color: "bg-red-400/70", label: "关闭" },
   { color: "bg-yellow-400/70", label: "最小化" },
   { color: "bg-green-400/70", label: "最大化" },
-];
+]
 
-type Preview = { label: string; src: typeof preview1; value: string };
+type Preview = { label: string; src: typeof preview1; value: string }
 
 const previews: [Preview, Preview] = [
   { label: "主界面", src: preview1, value: "1" },
   { label: "配置页", src: preview2, value: "2" },
-];
+]
 
 export const PreviewSection = () => {
-  const [active, setActive] = useState(previews[0].value);
-  const idx = previews.findIndex((p) => p.value === active);
+  const [active, setActive] = useState(previews[0].value)
+  const idx = previews.findIndex((p) => p.value === active)
 
   return (
     <Tooltip.Provider delayDuration={300}>
@@ -98,5 +98,5 @@ export const PreviewSection = () => {
         </Tabs.Root>
       </section>
     </Tooltip.Provider>
-  );
-};
+  )
+}

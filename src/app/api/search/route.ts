@@ -1,7 +1,7 @@
-import { createTokenizer } from "@orama/tokenizers/mandarin";
-import { createFromSource } from "fumadocs-core/search/server";
+import { createTokenizer } from "@orama/tokenizers/mandarin"
+import { createFromSource } from "fumadocs-core/search/server"
 
-import { source } from "@/lib/source";
+import { source } from "@/lib/source"
 
 export const { GET } = createFromSource(source, {
   components: {
@@ -11,4 +11,4 @@ export const { GET } = createFromSource(source, {
     threshold: 0,
     tolerance: 0,
   },
-});
+})

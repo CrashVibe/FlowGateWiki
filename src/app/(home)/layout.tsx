@@ -1,7 +1,9 @@
-import { HomeLayout } from "fumadocs-ui/layouts/home";
+import { HomeLayout } from "fumadocs-ui/layouts/home"
 
-import { baseOptions } from "@/lib/layout.shared";
+import { baseOptions } from "@/lib/layout.shared"
 
-const Layout = ({ children }: LayoutProps<"/">) => <HomeLayout {...baseOptions}>{children}</HomeLayout>;
+const Layout = ({ children }: LayoutProps<"/">) => (
+  <HomeLayout {...baseOptions}>{children}</HomeLayout>
+)
 
-export default Layout;
+export default Layout

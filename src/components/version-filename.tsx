@@ -1,50 +1,54 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 
-import { cn } from "@/lib/cn";
-import type { VersionInfo } from "@/lib/github";
-import { getFGateClientVersion, getFGateNexusVersion } from "@/lib/github";
+import type { VersionInfo } from "@/lib/github"
+import { cn } from "@/lib/cn"
+import { getFGateClientVersion, getFGateNexusVersion } from "@/lib/github"
 
 interface VersionFilenameProps {
-  repo: "nexus" | "client";
-  template: string;
-  fallbackVersion?: string;
+  repo: "nexus" | "client"
+  template: string
+  fallbackVersion?: string
 }
 
-export const VersionFilename = ({ repo, template, fallbackVersion = "vx.x.x" }: VersionFilenameProps) => {
-  const [versionInfo, setVersionInfo] = useState<VersionInfo | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const VersionFilename = ({
+  repo,
+  template,
+  fallbackVersion = "vx.x.x",
+}: VersionFilenameProps) => {
+  const [versionInfo, setVersionInfo] = useState<VersionInfo | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    let cancelled = false;
+    let cancelled = false
 
     const fetchVersion = async () => {
       try {
-        setIsLoading(true);
-        const info = repo === "nexus" ? await getFGateNexusVersion() : await getFGateClientVersion();
+        setIsLoading(true)
+        const info = repo === "nexus" ? await getFGateNexusVersion() : await getFGateClientVersion()
         if (!cancelled) {
-          setVersionInfo(info);
+          setVersionInfo(info)
         }
       } catch (error) {
-        console.info(`Failed to fetch ${repo} version:`, error);
+        console.info(`Failed to fetch ${repo} version:`, error)
       } finally {
         if (!cancelled) {
-          setIsLoading(false);
+          setIsLoading(false)
         }
       }
-    };
+    }
 
-    void fetchVersion();
+    void fetchVersion()
     return () => {
-      cancelled = true;
-    };
-  }, [repo]);
+      cancelled = true
+    }
+  }, [repo])
 
   const displayText = template.replaceAll(
     "{version}",
     isLoading && !versionInfo ? "vx.x.x" : (versionInfo?.version ?? fallbackVersion)
-  );
+  )
 
   return (
     <code
@@ -55,5 +59,5 @@ export const VersionFilename = ({ repo, template, fallbackVersion = "vx.x.x" }: 
     >
       {displayText}
     </code>
-  );
-};
+  )
+}
